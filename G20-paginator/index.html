@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html ng-app="app">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Страны большой двадцатки</title>
+
+    <!--<link rel="stylesheet" href="css/bootstrap.min.css"/>-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <!--<script src="libs/angular.js"></script>-->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
+
+    <style>
+
+        h1 {
+            text-align: center;
+        }
+
+        .item-holder {
+            height: 250px;
+            text-align: center;
+        }
+
+    </style>
+
+</head>
+<body>
+
+<h1>Страны большой двадцатки</h1>
+
+<div class="well" ng-controller="MainCtrl">
+
+    <div class="item-holder">
+        <h2>{{curItem.name}}</h2>
+        <img ng-src="img/{{curItem.flag}}" alt=""/>
+    </div>
+    <hr/>
+
+    <ul class="nav nav-pills">
+        <li ng-repeat="item in data" ng-class="{active:item.active}"><a href="#" ng-click="selectItem(item)">{{(item.id + 1)}}</a></li>
+    </ul>
+
+</div>
+
+<script>
+
+    var data = [
+        {id:0, name:"Россия", flag:"ru.jpg"},
+        {id:1, name:"США", flag:"us.jpg"},
+        {id:2, name:"Саудовская Аравия", flag:"saudi.jpg"},
+        {id:3, name:"Турция", flag:"turkey.jpg"},
+        {id:4, name:"Мексика", flag:"mex.jpg"},
+        {id:5, name:"Германия", flag:"germany.jpg"},
+        {id:6, name:"Индия", flag:"india.jpg"},
+        {id:7, name:"Индонезия", flag:"indonesia.jpg"},
+        {id:8, name:"Франция", flag:"france.jpg"},
+        {id:9, name:"Япония", flag:"japan.jpg"},
+        {id:10, name:"Великобритания", flag:"uk.jpg"},
+        {id:11, name:"Китай", flag:"china.jpg"},
+        {id:12, name:"Канада", flag:"canada.jpg"},
+        {id:13, name:"Австралия", flag:"australia.jpg"},
+        {id:14, name:"Аргентина", flag:"argentina.jpg"},
+        {id:15, name:"Бразилия", flag:"brasil.jpg"},
+        {id:16, name:"Италия", flag:"italia.jpg"},
+        {id:17, name:"ЮАР", flag:"afr.jpg"},
+        {id:18, name:"Южная Корея", flag:"korea.jpg"},
+        {id:19, name:"Евросоюз", flag:"eu.jpg"}
+    ];
+
+    var app = angular.module("app", []);
+
+    app.controller("MainCtrl", function($scope) {
+        $scope.data = data;
+        $scope.curItem = null;
+
+        $scope.selectItem = function(item) {
+            if ($scope.curItem) $scope.curItem.active = false;
+            $scope.curItem = item;
+            $scope.curItem.active = true;
+
+        };
+
+        $scope.selectItem($scope.data[0]);
+
+    });
+
+</script>
+
+</body>
+</html>
