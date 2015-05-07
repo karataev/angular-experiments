@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html ng-app="app">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>100 clicks</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>-->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
+
+    <style>
+        .container {
+            text-align: center;
+        }
+    </style>
+
+</head>
+<body ng-controller="MainCtrl">
+
+<div class="container">
+    <h1>100 clicks</h1>
+    <div class="jumbotron">
+        <h1>{{clicks}} click(s)</h1>
+
+        <p class="bg-success">{{comment}}</p>
+
+        <div class="progress">
+            <div class="progress-bar" role="progressbar"
+                 ng-style="{width : ( getPercentage() + '%' ) }">
+                {{clicks}}%
+            </div>
+        </div>
+
+        <button type="button"
+                class="btn btn-warning"
+                ng-click="doClick()"
+                ng-disabled="clicks>=100">CLICK
+        </button>
+    </div>
+</div>
+
+<script>
+
+    var app = angular.module("app", []);
+
+    app.controller("MainCtrl", function($scope) {
+        $scope.clicks = 0;
+        $scope.comment = "Let's do this";
+
+        $scope.doClick = function() {
+            $scope.clicks += 1;
+
+            var c = $scope.clicks;
+            if (c >= 100) $scope.comment = "You did it! Awesome! Now get back to work.";
+            else if (c >= 90) $scope.comment = "Almost done";
+            else if (c >= 80) $scope.comment = "Click click click";
+            else if (c >= 70) $scope.comment = "Speedy finger";
+            else if (c >= 60) $scope.comment = "Doing great!";
+            else if (c >= 50) $scope.comment = "Half way through";
+            else if (c >= 40) $scope.comment = "Click click click";
+            else if (c >= 30) $scope.comment = "See, not hard at all";
+            else if (c >= 20) $scope.comment = "You can do it, I believe in you";
+            else if (c >= 10) $scope.comment = "Good start!";
+        };
+
+        $scope.getPercentage = function() {
+            return $scope.clicks;
+        };
+
+    });
+
+</script>
+
+</body>
+</html>
