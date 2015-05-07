@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html ng-app="app">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Simple Math Test</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
+
+    <style>
+        .container {
+            text-align: center;
+        }
+
+        .label-answer {
+            display: inline-block;
+            margin-right: 5px;
+        }
+
+    </style>
+
+</head>
+<body ng-controller="MainCtrl">
+
+<div class="container">
+    <h1>Simple Math Test</h1>
+    <div class="jumbotron">
+        <h1>{{varA}}+{{varB}}</h1>
+    </div>
+    <h4>Correct answers: {{correctAnswers}}</h4>
+    <form ng-submit="submit()">
+        <input type="number" ng-model="answer" placeholder="your answer" autofocus/>
+        <input type="submit" value="OK"/>
+    </form>
+
+    <div ng-repeat="answer in playerAnswers" class="label-answer">
+        <span class="label" ng-class="{'label-success':answer.correct, 'label-danger':!answer.correct}">{{answer.value}}</span>
+    </div>
+
+
+</div>
+
+<script>
+    var app = angular.module("app", []);
+
+    app.controller("MainCtrl", function($scope) {
+
+        var range = 10;
+
+        $scope.playerAnswers = [];
+        $scope.correctAnswers = 0;
+        nextRound();
+
+        $scope.submit = function() {
+            if ($.isNumeric($scope.answer)) {
+                if ($scope.answer == $scope.varA + $scope.varB) {
+                    $scope.playerAnswers.push({value:$scope.answer, correct:true});
+                    $scope.correctAnswers++;
+                    range += 1;
+                    nextRound();
+                } else {
+                    $scope.playerAnswers.push({value:$scope.answer, correct:false});
+                }
+
+                $scope.answer = null;
+            }
+        };
+
+        function nextRound() {
+            $scope.varA = getRandom(range);
+            $scope.varB = getRandom(range);
+        }
+
+        function getRandom(n) {
+            return Math.floor( Math.random() * n );
+        }
+
+    })
+
+</script>
+
+
+
+</body>
+</html>
