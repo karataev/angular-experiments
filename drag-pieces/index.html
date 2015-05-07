@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html ng-app="dragModule">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Assemble the image from pieces</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
+
+
+    <style>
+        body {
+            overflow: hidden;
+        }
+
+        .piece {
+            background-color: white;
+            position: absolute;
+            background-image: url(img/hair.jpg);
+        }
+
+    </style>
+
+</head>
+<body ng-controller="MainCtrl">
+
+<h1>Assemble the image from pieces</h1>
+<p>This example has three angular directives: 'split', 'random-pos' and 'draggable' to split the image into pieces, randomize their positions in the browser's window and add drag functionality.</p>
+
+<div
+        ng-repeat="i in range(splitX*splitY) track by $index"
+        class="piece"
+        draggable random-pos split="{{$index}}">
+</div>
+
+<script>
+
+    var app = angular.module("dragModule", []);
+
+    app.controller("MainCtrl", function($scope) {
+
+        var totalWidth = 370;
+        var totalHeight = 600;
+        $scope.splitX = 3;
+        $scope.splitY = 5;
+        $scope.elemWidth = totalWidth / $scope.splitX;
+        $scope.elemHeight = totalHeight / $scope.splitY;
+
+        $scope.range = function(n) {
+            return new Array(n);
+        };
+    });
+
+    app.directive("split", function() {
+        function link(scope, element, attrs) {
+            var index = attrs["split"];
+            var offsetX = (index % scope.splitX) * scope.elemWidth;
+            var offsetY = Math.floor(index / scope.splitX) * scope.elemHeight;
+
+            element.css("width", scope.elemWidth + "px");
+            element.css("height", scope.elemHeight + "px");
+            element.css("background-position", offsetX + "px" + " " + offsetY + "px");
+        }
+
+        return {link:link}
+    });
+
+    app.directive("randomPos", function() {
+
+        function link(scope, element, attrs) {
+            var rndX = Math.floor(Math.random() * (window.innerWidth - element.width()));
+            var rndY = Math.floor(Math.random() * (window.innerHeight- element.height()));
+            element.css({
+                left:rndX+"px",
+                top:rndY+"px"
+            });
+        }
+
+        return {link:link}
+    });
+
+    var topZindex = 1;
+    app.directive("draggable", function($document) {
+
+        function link(scope, element, attrs) {
+            var startX = element.position().left;
+            var startY = element.position().top;
+            var x = startX;
+            var y = startY;
+
+            element.css({
+                cursor:"pointer"
+            });
+
+            element.on("mousedown", function(event) {
+                event.preventDefault();
+                startX = event.pageX - x;
+                startY = event.pageY - y;
+                $document.on("mousemove", mousemove);
+                $document.on("mouseup", mouseup);
+                element.css("z-index", topZindex);
+                topZindex++;
+            });
+
+            function mousemove(event) {
+                y = event.pageY - startY;
+                x = event.pageX - startX;
+                element.css({
+                    top:y + "px",
+                    left:x + "px"
+                })
+            }
+
+            function mouseup() {
+                $document.off("mousemove", mousemove);
+                $document.off("mouseup", mouseup);
+            }
+        }
+
+        return {
+            link:link
+        }
+    })
+
+</script>
+
+</body>
+</html>
