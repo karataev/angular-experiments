@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html ng-app="app">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Reversed Text</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>-->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
+
+    <style>
+        html, body {
+            background-color: #000;
+            height: 100%;
+            text-align: center;
+        }
+        h1 {
+            color: #F1F000;
+        }
+    </style>
+
+</head>
+<body ng-controller="MainCtrl">
+
+<div class="container" ng-init="start()">
+    <h1>{{curText}}</h1>
+    <br/>
+    <h1 my-reversed></h1>
+    <br/>
+    <button class="btn" ng-click="start()" ng-show="complete">Restart</button>
+</div>
+
+<script>
+    var app = angular.module("app", []);
+
+    var allText = "A long time ago, in a galaxy far, far away....";
+    var index;
+    var intervalHandler;
+
+    app.controller("MainCtrl", function($scope, $interval) {
+
+        $scope.curText = "";
+
+        $scope.start = function() {
+            index = 0;
+            $scope.curText = "";
+            $scope.reversedText = "";
+            $scope.complete = false;
+
+            intervalHandler = $interval(updateText, 100);
+        };
+
+        function updateText() {
+            $scope.curText += allText[index];
+            index++;
+            if (index >= allText.length) {
+                $interval.cancel(intervalHandler);
+                $scope.complete = true;
+            }
+        }
+
+    });
+
+    app.directive("myReversed", function() {
+
+        function reverse(s){
+            return s.split("").reverse().join("");
+        }
+
+        function link(scope, element, attrs) {
+            scope.$watch("curText", function() {
+                scope.reversedText = reverse(scope.curText);
+            });
+        }
+
+        return {
+            link:link,
+            template:"{{reversedText}}"
+        };
+    })
+
+</script>
+
+
+</body>
+</html>
