@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html ng-app="app">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Spawn Circles</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.16.1/TweenMax.min.js"></script>
+
+    <style>
+
+        body {
+            text-align: center;
+        }
+
+        .circle {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background-color: yellow;
+            border-radius:50%;
+            /*opacity: 0.5;*/
+            margin-left: -50px;
+            margin-top: -50px;
+            text-align: center;
+            line-height: 100px;
+        }
+
+        .circle p {
+            font-size: 30px;
+            color: #000000;
+        }
+
+    </style>
+
+</head>
+<body ng-controller="MainCtrl">
+
+<h1>Click to add circles</h1>
+<p>Number of circles: {{items.length}}</p>
+
+<my-circle ng-repeat="item in items" id="{{item.id}}" x="{{item.x}}" y="{{item.y}}">
+    <!--<p></p>-->
+</my-circle>
+
+<script>
+
+    var app = angular.module("app", []);
+
+    app.controller("MainCtrl", function($scope, $document) {
+
+        var ID = 0;
+        $scope.items = [];
+
+        $scope.addItem = function(x, y) {
+            $scope.items.push( {id:ID, x:x, y:y} );
+            ID++;
+        };
+
+        $scope.removeItem = function(id) {
+            var item = getItemById(id);
+            var index = $scope.items.indexOf(item);
+            $scope.items.splice(index, 1);
+        };
+
+        function getItemById(id) {
+            for (var i = 0; i < $scope.items.length; i++) {
+                var item = $scope.items[i];
+                if (item.id == id) return item;
+            }
+            return null;
+        }
+
+        $document.on("mousedown", function(e) {
+            //console.log(e.pageX, e.pageY);
+            $scope.addItem(e.pageX, e.pageY);
+            $scope.$apply();
+        });
+
+
+        $scope.addItem(200, 200);
+
+    });
+
+    app.directive("myCircle", function() {
+
+        function link(scope, element, attrs) {
+            scope.id = attrs["id"];
+
+            element.addClass("circle");
+            element.css({
+                left:attrs.x + "px",
+                top:attrs.y + "px"
+            });
+
+            function killComplete() {
+                scope.removeItem(scope.id);
+                scope.$apply();
+            }
+
+            TweenMax.from(element, 0.3, {scale:0, ease:Back.easeOut});
+            TweenMax.to(element, 0.3, {scale:0, ease:Back.easeIn, delay:3,onComplete:killComplete});
+        }
+
+        return {
+            link:link,
+            template:"<p>:D</p>"
+        }
+    })
+
+</script>
+
+</body>
+</html>
