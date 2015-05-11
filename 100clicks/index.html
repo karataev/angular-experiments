@@ -20,7 +20,16 @@
 <div class="container">
     <h1>100 clicks</h1>
     <div class="jumbotron">
-        <h1>{{clicks}} click(s)</h1>
+        <h1>
+            <!--{{clicks}} click(s)-->
+            <ng-pluralize
+                    count="clicks"
+                    when="{
+                        '1':'{} click',
+                        'other':'{} clicks'
+                    }"
+                    ></ng-pluralize>
+        </h1>
 
         <p class="bg-success">{{comment}}</p>
 
