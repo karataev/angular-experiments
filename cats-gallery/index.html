@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html ng-app="app">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Everyone loves kittens!</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+
+        h1 {
+            text-align: center;
+        }
+
+        .gallery {
+            width: 500px;
+            border:1px solid black;
+            background-size:contain;
+            background-repeat: no-repeat;
+            background-position: center center;
+            margin: 0 auto;
+        }
+
+        .gallery .display {
+            height: 400px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .gallery .display img {
+            width: 100%;
+            height: auto;
+        }
+
+        .gallery .thumb {
+            text-align: center;
+            padding-left: 1px;
+            list-style-type: none;
+        }
+
+        .gallery .thumb img {
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+        }
+
+        .gallery .thumb li {
+            display: inline;
+            margin-right: 5px;
+        }
+
+    </style>
+
+</head>
+
+<body ng-controller="MainCtrl">
+
+<div class="container">
+    <h1>Kittens! <small>Simple gallery</small></h1>
+    <gallery images="cats"></gallery>
+</div>
+
+<script>
+
+    var app = angular.module("app", []);
+
+    app.controller("MainCtrl", function($scope) {
+
+        $scope.cats = [
+            {src: 'http://placekitten.com/g/500/400', alt: 'mimimi'},
+            {src: 'http://placekitten.com/g/500/500', alt: 'mimimi'},
+            {src: 'http://placekitten.com/g/500/600', alt: 'mimimi'},
+            {src: 'http://placekitten.com/g/500/350', alt: 'mimimi'}
+        ]
+
+    });
+
+    app.directive("gallery", function() {
+       return {
+           templateUrl:"imageGallery.html",
+           replace:true,
+           scope: {images:"="},
+           restrict:"E",
+           controller: function($scope) {
+               $scope.selectedImage = $scope.images[0];
+               $scope.setImage = function(image) {
+                   $scope.selectedImage = image;
+               }
+           }
+       }
+    })
+
+
+</script>
+
+</body>
+</html>

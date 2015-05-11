@@ -1,0 +1,11 @@
+
+<div class="gallery">
+    <div class="display">
+        <img ng-src="{{selectedImage.src}}"/>
+    </div>
+    <ul class="thumb">
+        <li ng-repeat="image in images">
+            <img ng-src="{{image.src}}" alt="{{image.alt}}" ng-click="setImage(image)"/>
+        </li>
+    </ul>
+</div>
