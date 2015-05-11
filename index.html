@@ -1,10 +1,12 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" ng-app="app">
 <head>
     <meta charset="UTF-8">
     <title>Angular Experiments</title>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
 
     <style>
         .content {
@@ -13,42 +15,42 @@
     </style>
 
 </head>
-<body>
-
+<body ng-controller="MainCtrl">
 
 <div class="container well content">
 
     <h1>Angular experiments</h1>
     <br/>
 
-    <h4><a href="http://karataev.github.io/angular-experiments/G20-paginator/">G20 paginator</a></h4>
-    <p>G20 countries with paginator (rus)</p>
-    <hr/>
-    <h4><a href="http://karataev.github.io/angular-experiments/ng-repeat/">ng-repeat</a></h4>
-    <p>ng-repeat directive without a collection (FizzBuzz game)</p>
-    <hr/>
-    <h4><a href="http://karataev.github.io/angular-experiments/drag-pieces/">Drag pieces</a></h4>
-    <p>This example has three angular directives: 'split', 'random-pos' and 'draggable' to split the image into pieces, randomize their positions in the browser's window and add drag functionality.</p>
-    <hr/>
-    <h4><a href="http://karataev.github.io/angular-experiments/math-test/">Simple Math Test</a></h4>
-    <p>Math is fun. Not really.</p>
-    <hr/>
-    <h4><a href="http://karataev.github.io/angular-experiments/100clicks/">100 Clicks</a></h4>
-    <p>To click or not to click. That's the question.</p>
-    <hr/>
-    <h4><a href="http://karataev.github.io/angular-experiments/reversed-text/">Reversed Text</a></h4>
-    <p>Star $watch</p>
-    <hr/>
-    <h4><a href="http://karataev.github.io/angular-experiments/spawn-circles/">:D Circles</a></h4>
-    <p>More custom directives. This time combined with Greensock Animations</p>
-    <hr/>
-    <h4><a href="http://karataev.github.io/angular-experiments/cats-gallery/">Kittens!</a></h4>
-    <p>A simple image gallery with kittens</p>
-    <hr/>
-    <h4><a href="http://karataev.github.io/angular-experiments/flags-quiz/">Flags Quiz</a></h4>
-    <p>Flag-Country quiz</p>
-    <hr/>
+    <ol>
+        <li ng-repeat="item in items">
+            <h4><a ng-href="http://karataev.github.io/angular-experiments/{{item.url}}">{{item.title}}</a></h4>
+            <p>{{item.desc}}</p>
+            <hr/>
+        </li>
+    </ol>
+
 </div>
+
+<script>
+
+    var app = angular.module("app", []);
+
+    app.controller("MainCtrl", function($scope) {
+        $scope.items = [
+            {title:"G20 paginator", url:"G20-paginator", desc:"G20 countries with paginator (rus)"},
+            {title:"ng-repeat", url:"ng-repeat", desc:"ng-repeat directive without a collection (FizzBuzz game)"},
+            {title:"Drag pieces", url:"drag-pieces", desc:"This example has three angular directives: 'split', 'random-pos' and 'draggable' to split the image into pieces, randomize their positions in the browser's window and add drag functionality."},
+            {title:"Simple Math Test", url:"math-test", desc:"Math is fun. Not really."},
+            {title:"100 Clicks", url:"100clicks", desc:"To click or not to click. That's the question."},
+            {title:"Reversed Text", url:"reversed-text", desc:"Star $watch"},
+            {title:":D Circles", url:"spawn-circles", desc:"More custom directives. This time combined with Greensock Animations"},
+            {title:"Kittens!", url:"cats-gallery", desc:"A simple image gallery with kittens"},
+            {title:"Flags Quiz", url:"flags-quiz", desc:"Flag-Country quiz"}
+        ];
+    })
+
+</script>
 
 </body>
 </html>
