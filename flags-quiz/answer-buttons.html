@@ -1,0 +1,15 @@
+
+
+
+<div ng-repeat="a in answers">
+    <button class="btn btn-default btn-lg a-btn"
+            ng-class="{'btn-success':a.showCorrect, 'btn-danger':a.showWrong}"
+            ng-click="click(a)"
+            ng-disabled="a.disabled">
+<!--
+        <span class="glyphicon"
+              ng-class="{'glyphicon-arrow-right':a.selected}"></span>
+-->
+        {{a.value}}
+    </button>
+</div>

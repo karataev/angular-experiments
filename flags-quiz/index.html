@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html ng-app="app">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Buttons</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/3.8.0/lodash.min.js"></script>
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+
+        .well {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .flag {
+            margin-bottom: 40px;
+        }
+
+        .a-btn {
+            width: 300px;
+            text-align: left;
+        }
+
+    </style>
+
+</head>
+<body ng-controller="MainCtrl">
+
+<div class="container">
+    <div class="well">
+        <div class="wrapper" ng-hide="gameComplete">
+            <h1>What country is it?</h1>
+            <h4><small>Question {{index + 1}}/{{data.length}}</small></h4>
+            <img class="flag" ng-src="img/{{curItem.url}}" alt=""/>
+
+            <answer-buttons></answer-buttons>
+            <br/>
+            <button class="btn btn-info" ng-click="nextClick()" ng-show="showNext">Next</button>
+        </div>
+
+        <div class="game-complete" ng-show="gameComplete">
+            <h1>Game Complete!</h1>
+            <h2>Congratulations!</h2>
+            <h3>Correct answers: {{correctAnswers}}/{{data.length}}</h3>
+            <button class="btn btn-info" ng-click="restartClick()">Again?</button>
+        </div>
+    </div>
+</div>
+
+
+<script>
+
+    var app = angular.module("app", []);
+
+    app.controller("MainCtrl", function($scope) {
+
+        var data = [
+            {
+                url:"ru.jpg",
+                answers: ["Russia", "Germany", "Brasil", "France"]
+            },
+            {
+                url:"us.jpg",
+                answers: ["USA", "Great Britain", "Italy", "Canada"]
+            },
+            {
+                url:"saudi.jpg",
+                answers: ["Saudi Arabia", "Turkey", "India", "Indonesia"]
+            },
+            {
+                url:"turkey.jpg",
+                answers: ["Turkey", "Japan", "China", "Australia"]
+            },
+            {
+                url:"germany.jpg",
+                answers: ["Germany", "Argentina", "Brasil", "Russia"]
+            }
+        ];
+
+        function init() {
+            $scope.data = data;
+            $scope.index = 0;
+            $scope.showNext = false;
+            $scope.gameComplete = false;
+            $scope.correctAnswers = 0;
+        }
+
+        function startLevel() {
+            $scope.curItem = data[$scope.index];
+
+            var shuffledAnswers = _.shuffle(data[$scope.index].answers);
+            $scope.answers = [];
+            for (var i = 0; i < shuffledAnswers.length; i++) {
+                $scope.answers[i] = {value:shuffledAnswers[i]};
+                if (shuffledAnswers[i] == data[$scope.index].answers[0]) $scope.answers[i].correct = true;
+            }
+
+        }
+
+        $scope.nextClick = function() {
+
+            $scope.showNext = false;
+            $scope.index++;
+            if ($scope.index >= data.length) {
+                $scope.gameComplete = true;
+            }
+            else {
+                startLevel();
+            }
+        };
+
+        $scope.restartClick = function() {
+            init();
+            startLevel();
+        };
+
+        init();
+        startLevel();
+
+    });
+
+    app.directive("answerButtons", function() {
+
+        function link(scope, element, attrs) {
+
+            scope.click = function(selectedItem) {
+                //selectedItem.selected = true; // for gpyphicon
+
+                for (var i = 0; i < scope.answers.length; i++) {
+                    var item = scope.answers[i];
+                    item.disabled = true;
+                    if (item.correct) item.showCorrect = true;
+                }
+
+                if (selectedItem.correct) {
+                    scope.correctAnswers++;
+                }
+                else {
+                    selectedItem.showWrong = true;
+                }
+
+                scope.showNext = true;
+
+            }
+        }
+
+        return {
+            link:link,
+            restrict:"E",
+            replace:true,
+            templateUrl:"answer-buttons.html"
+        };
+    });
+
+
+</script>
+
+</body>
+</html>
