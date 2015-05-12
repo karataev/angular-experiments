@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html ng-app="app">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>AngularJS $watch</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+
+</head>
+<body>
+
+
+
+<div class="container" ng-controller="MainCtrl">
+    <h1>$watch example </h1>
+    <h5><small>Based on Joe Maddalone <a href="http://www.youtube.com/watch?v=It16C_odZ_g">tutorial</a></small></h5>
+    Number of names to fetch: <select ng-model="countSelection" ng-options="n for n in [5, 10, 15, 20]"></select>
+    <hr/>
+    <div ng-repeat="person in people">
+        <input type="text" ng-model="person.fname"/>
+    </div>
+    <br/>
+    <p>Last change: {{whenChanged}}</p>
+</div>
+
+<script>
+    var app = angular.module("app", []);
+
+    app.controller("MainCtrl", function($scope, $http) {
+        $scope.getPeople = function(count) {
+            $http.jsonp("http://filltext.com/?rows="+count+"&fname={firstName}&callback=JSON_CALLBACK")
+                    .success(function(data) {
+                        $scope.people = data;
+                    })
+        };
+
+        $scope.countSelection = 10;
+        /*$scope.getPeople($scope.countSelection);*/
+
+        $scope.$watch("countSelection", function(newValue, oldValue) {
+            $scope.getPeople(newValue);
+        });
+
+        $scope.$watch("people", function(n, o) {
+            if (n != o) {
+                $scope.whenChanged = Date().toString();
+            }
+
+        })
+
+    })
+
+</script>
+
+</body>
+</html>
