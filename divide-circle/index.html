@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html ng-app="app">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Divide a circle</title>
+
+    <!--<script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/3.8.0/lodash.min.js"></script>-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.js"></script>
+    <script src="libs/randomColor.js"></script>
+
+    <style>
+        * {
+            box-sizing:border-box;
+        }
+
+        .wrapper {
+            width: 500px;
+            margin: 0 auto;
+        }
+
+        .container {
+            height: 550px;
+            text-align: center;
+            position: relative;
+            border:1px solid #eee;
+        }
+
+        .getrid {
+            margin-top: -20px;
+        }
+
+        .win {
+            color: #b22a1e;
+        }
+
+        .circle {
+            position: absolute;
+            color:white;
+            text-align: center;
+            /*background-color: red;*/
+            border-radius:50%;
+            /*border:1px solid black;*/
+        }
+    </style>
+</head>
+<body ng-controller="MainCtrl">
+
+<div class="wrapper">
+    <div class="container">
+        <h1>Circles: {{items.length}}</h1>
+        <p class="getrid">Get rid of all circles!</p>
+        <h2 class="win" ng-show="items.length == 0">Congratulations! You did it! Awesome!</h2>
+        <ek-circle ng-repeat="item in items"></ek-circle>
+    </div>
+
+</div>
+
+
+<script>
+
+    var app = angular.module("app", []);
+
+    app.controller("MainCtrl", function($scope) {
+
+        var ID = 0;
+
+        $scope.items = [];
+
+        $scope.removeItem = function(item) {
+            var index = $scope.items.indexOf(item);
+            $scope.items.splice(index, 1);
+        };
+
+        $scope.addItem = function(x, y, r) {
+            $scope.items.push( {id:ID, x:x, y:y, r:r} );
+            ID++;
+        };
+
+        $scope.addItem(50, 100, 400);
+
+        //TODO randomize colors!
+
+    });
+
+    app.directive("ekCircle", function() {
+        return {
+            restrict:"E",
+            /*scope:{},*/
+            replace:true,
+            link: function(scope, el, attrs) {
+
+                var color = randomColor({luminosity:"light"});
+
+                el.css({
+                    width:scope.item.r + "px",
+                    height:scope.item.r + "px",
+                    left:scope.item.x + "px",
+                    top:scope.item.y + "px",
+                    "background-color":color
+                });
+
+                el.addClass("circle");
+
+                el.on("mouseenter", function() {
+                    var r2 = scope.item.r / 2;
+                    if (r2 > 5) {
+                        scope.addItem(scope.item.x, scope.item.y, r2);
+                        scope.addItem(scope.item.x + r2, scope.item.y, r2);
+                        scope.addItem(scope.item.x, scope.item.y + r2, r2);
+                        scope.addItem(scope.item.x + r2, scope.item.y + r2, r2);
+                    }
+                    el.off();
+                    scope.removeItem(scope.item);
+                    scope.$apply();
+                })
+
+            },
+            template:"<div></div>"
+        }
+    })
+
+</script>
+
+</body>
+</html>
