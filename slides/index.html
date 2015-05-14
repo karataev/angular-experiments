@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html ng-app="app">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.js"></script>
+
+    <style>
+        .slide {
+            position: relative;
+            /*background-color: #eeeeee;*/
+        }
+
+        .btn-close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+
+        .panel-heading h3 {
+            margin-top: 5px;
+        }
+
+    </style>
+
+</head>
+<body ng-controller="MainCtrl">
+
+<div class="container">
+    <h1>Slides with random images</h1>
+    <button class="btn btn-primary" ng-click="addSlide()">Add</button>
+    <br/><br/>
+    <div class="slides-holder">
+
+    </div>
+</div>
+
+
+<script>
+
+    var app = angular.module("app", []);
+
+    app.controller("MainCtrl", function($scope, $compile) {
+
+        $scope.addSlide = function() {
+            var template = "<ek-slide></ek-slide>";
+            var compiledTemplate = $compile(template)($scope.$new());
+            $(".slides-holder").append(compiledTemplate);
+        };
+
+        var ID = 0;
+        $scope.getId = function() {
+            ID++;
+            return ID;
+        }
+
+    });
+
+    app.directive("ekSlide", function() {
+       return {
+           replace:true,
+           controller: function($scope, $element) {
+               $scope.id = $scope.getId();
+
+               $scope.imgWidth = 200 + Math.floor(Math.random() * 300);
+               $scope.imgHeight = 200 + Math.floor(Math.random() * 200);
+               $scope.imgSrc = "http://lorempixel.com/" + $scope.imgWidth + "/" + $scope.imgHeight;
+           },
+           link: function(scope, el, attrs) {
+
+               scope.close = function() {
+                   scope.$destroy();
+                   el.remove();
+               }
+           },
+           templateUrl:"tmpl/slide2.html"
+       }
+    })
+
+</script>
+
+</body>
+</html>
