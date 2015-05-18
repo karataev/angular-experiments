@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html ng-app="app">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Box Shadow Editor</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="libs/bootstrap-slider.css"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.js"></script>
+    <script src="libs/bootstrap-slider.js"></script>
+
+    <style>
+
+        .container h1 {
+            margin-bottom: 30px;
+        }
+
+        .slider-holder {
+            padding-bottom: 30px;
+        }
+
+        .slider-holder span {
+            margin-right: 50px;
+        }
+
+        .box {
+            width: 500px;
+            height: 300px;
+            color: #ffffff;
+            background-color: #dbb42f;
+            /*box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.5);*/
+            margin: 0 auto;
+        }
+
+        .box h4 {
+            padding-top: 100px;
+            text-align: center;
+        }
+
+    </style>
+
+</head>
+<body ng-controller="MainCtrl">
+
+<div class="container">
+    <h1>Create your own box shadow</h1>
+    <div class="slider-holder">
+        <span>Horizontal Length</span>
+        <input id="hLength" type="text" data-slider-min="-20" data-slider-max="20" data-slider-step="1" data-slider-value="0"/>
+    </div>
+    <div class="slider-holder">
+        <span>Vertical Length</span>
+        <input id="vLength" type="text" data-slider-min="-20" data-slider-max="20" data-slider-step="1" data-slider-value="0"/>
+    </div>
+    <div class="slider-holder">
+        <span>Blur Radius</span>
+        <input id="blurRadius" type="text" data-slider-min="0" data-slider-max="50" data-slider-step="1" data-slider-value="10"/>
+    </div>
+    <div class="slider-holder">
+        <span>Spread Radius</span>
+        <input id="spreadRadius" type="text" data-slider-min="0" data-slider-max="50" data-slider-step="1" data-slider-value="10"/>
+    </div>
+    <br/><br/>
+
+    <div class="box">
+        <h4>box-shadow:{{boxShadow}}</h4>
+    </div>
+
+</div>
+
+
+
+
+<script>
+
+    var app = angular.module("app", []);
+
+    app.controller("MainCtrl", function($scope) {
+
+        $scope.hLength = 0;
+        $scope.vLength = 0;
+        $scope.blurRadius = 10;
+        $scope.spreadRadius = 10;
+
+        $scope.$watchGroup(["hLength", "vLength", "blurRadius", "spreadRadius"], function() {
+            updateCss();
+        });
+
+        function updateCss() {
+            $scope.boxShadow = $scope.hLength + "px " +
+                    $scope.vLength + "px " +
+                    $scope.blurRadius + "px " +
+                    $scope.spreadRadius + "px " +
+                    "rgba(0,0,0,0.5)";
+            $(".box").css({
+                "box-shadow": $scope.boxShadow
+            });
+        }
+
+
+        $("#hLength").slider()
+                .on("change", function(e) {
+                    $scope.hLength = e.value.newValue;
+                    $scope.$apply();
+                });
+        $("#vLength").slider()
+                .on("change", function(e) {
+                    $scope.vLength = e.value.newValue;
+                    $scope.$apply();
+                });
+        $("#blurRadius").slider()
+                .on("change", function(e) {
+                    $scope.blurRadius = e.value.newValue;
+                    $scope.$apply();
+                });
+        $("#spreadRadius").slider()
+                .on("change", function(e) {
+                    $scope.spreadRadius = e.value.newValue;
+                    $scope.$apply();
+                });
+
+    });
+
+
+
+</script>
+
+</body>
+</html>
