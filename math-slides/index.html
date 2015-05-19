@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html ng-app="app">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Math Slides</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
+    <script src="libs/angular-scroll.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.16.1/TweenMax.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/1.1.26/howler.min.js"></script>
+    <!--<script src="libs/randomColor.js"></script>-->
+
+    <style>
+
+        header {
+            background-color: #ddd;
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 60px;
+            width: 100%;
+            margin: 0 auto;
+            z-index: 1000;
+        }
+
+        header h3 {
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .sounds {
+            position: fixed;
+            left: 10px;
+            top: 10px;
+        }
+
+        body {
+            margin-top: 60px;
+            margin-bottom: 800px;
+        }
+
+        .title {
+            text-align: center;
+        }
+
+        .slide {
+            padding: 40px;
+            border-radius:10px;
+            margin: 20px 0;
+            background-color: #eeeeee;
+            text-align: center;
+        }
+
+        .slide-correct {
+            background-color: #6dd86d;
+        }
+
+        .slide-wrong {
+            background-color: #ffa6a0;
+        }
+
+        .task {
+            font-size: 80px;
+        }
+
+        .bt-answer {
+            margin-right: 20px;
+            min-width: 80px;
+        }
+
+        .bt-selected {
+            /*border-width:5px;*/
+            font-weight: bold;
+        }
+
+        .game-over {
+            /*height: 300px;*/
+            text-align: center;
+            padding: 40px;
+        }
+
+    </style>
+
+</head>
+<body ng-controller="MainCtrl as main">
+
+<header>
+    <div class="sounds">
+        Sounds <input type="checkbox" ng-model="main.sndEnabled"/>
+    </div>
+
+    <h3>Correct answers: <span class="label label-default">{{main.correctAnswers}}</span></h3>
+</header>
+
+<div class="container">
+    <h1 class="title">Math Cards</h1>
+    <div quiz-slide tween-born ng-repeat="item in items" ng-controller="AnswersCtrl">
+        <h1 class="task">{{item.v1}} + {{item.v2}} = ?</h1>
+        <button answer-button ng-repeat="answer in item.answers">{{answer.value}}</button>
+    </div>
+    <div class="game-over alert alert-danger" tween-born ng-if="main.gameOver">
+        <h2>Oooops. Game is over</h2>
+        <h3>Correct answers: {{main.correctAnswers}}</h3>
+        <button class="btn btn-primary btn-lg" ng-click="playAgainClick()">Play again?</button>
+    </div>
+</div>
+
+
+<script>
+
+    var app = angular.module("app", ["duScroll"]);
+
+
+    app.controller("MainCtrl", function($scope) {
+
+        function init() {
+            $scope.items = [];
+            $scope.main.correctAnswers = 0;
+            $scope.main.gameOver = false;
+            $scope.addItem();
+        }
+
+        $scope.addItem = function() {
+            var id = $scope.items.length;
+            var v1 = Math.floor(Math.random() * 50);
+            var v2 = Math.floor(Math.random() * 50);
+            var numbers = getUniqueNumbers(v1 + v2);
+            var answers = [
+                {value:numbers[0]},
+                {value:numbers[1]},
+                {value:numbers[2]},
+                {value:numbers[3], isCorrect:true}
+            ];
+            answers = _.shuffle(answers);
+            $scope.items.push({
+                id:id,
+                v1:v1, v2:v2,
+                answers:answers,
+                playerCorrect:undefined
+            });
+        };
+
+        $scope.playAgainClick = function() {
+            init();
+        };
+
+        function getUniqueNumbers(correctValue) {
+            var arr = _.range(1, 101);
+            arr.splice(arr.indexOf(correctValue), 1);
+            arr = _.sample(arr, 3);
+            arr.push(correctValue);
+            return arr;
+        }
+
+        var sndCorrect = new Howl({
+            urls: ['snd/sndRight.mp3']
+        });
+        var sndWrong = new Howl({
+            urls: ['snd/sndWrong.mp3']
+        });
+        $scope.main.sndEnabled = true;
+
+        $scope.playCorrect = function() {
+            if ($scope.main.sndEnabled) sndCorrect.play();
+        };
+        $scope.playWrong = function() {
+            if ($scope.main.sndEnabled) sndWrong.play();
+        };
+
+
+        init();
+    });
+
+    app.controller("AnswersCtrl", function($scope) {
+
+        $scope.playerAnswered = function(answer) {
+            if (answer.isCorrect) {
+                $scope.main.correctAnswers++;
+                $scope.item.playerCorrect = true;
+                $scope.playCorrect();
+                $scope.addItem();
+            }
+            else {
+                $scope.item.playerCorrect = false;
+                $scope.playWrong();
+                $scope.main.gameOver = true;
+            }
+            disableButtons();
+
+        };
+
+        function disableButtons() {
+            $scope.item.answers.forEach(function(x) {
+                x.disabled = true;
+            });
+        }
+    });
+
+    app.directive("quizSlide", function() {
+        return {
+            link: function(scope, el, attrs) {
+                el.addClass("slide");
+                var height = 400;
+                el.css({
+                    height:height + "px"
+                });
+
+                scope.$watch("item.playerCorrect", function(newValue, oldValue) {
+                    if (newValue === true) {
+                        TweenMax.to(el, 0.5, {className:"+=slide-correct"});
+                        //el.addClass("slide-correct");
+
+                    } else if (newValue === false) {
+                        TweenMax.to(el, 0.5, {className:"+=slide-wrong"});
+                        //el.addClass("slide-wrong");
+                    }
+                });
+
+            }
+        }
+    });
+
+    app.directive("tweenBorn", function($document) {
+        return {
+            link:function(scope, el, attrs) {
+                var offset = 20 + 60;
+                var duration = 1000;
+                $document.scrollToElement(el, offset, duration);
+
+                TweenMax.from(el, 0.5, {opacity:0, ease:Power0.easeNone});
+            }
+        }
+    });
+
+    app.directive("answerButton", function() {
+        return {
+            link:function(scope, el, attrs) {
+                el.addClass("btn btn-default btn-lg bt-answer");
+
+                scope.$watch("answer.disabled", function(newValue, oldValue) {
+                    if (newValue === true) {
+                        el.attr("disabled", "");
+                    }
+                });
+
+                el.on("click", function() {
+                    el.addClass("bt-selected");
+                    scope.playerAnswered(scope.answer);
+                    scope.$apply();
+                })
+            }
+        }
+    })
+
+</script>
+
+</body>
+</html>
