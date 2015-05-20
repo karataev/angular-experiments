@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html ng-app="app">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
+
+    <style>
+        .panel-default {
+            /*max-width: 800px;*/
+            padding: 20px;
+        }
+
+        .emoji-img {
+            margin: 20px 0;
+        }
+
+        .json-data {
+            font-size: 10px;
+        }
+
+    </style>
+
+</head>
+<body ng-controller="MainCtrl as main">
+
+<div class="container">
+    <h1>Game of Thrones Editor</h1>
+
+    <div ng-repeat="item in items" class="panel panel-default">
+        <div class="form-inline">
+            <h1>{{item.id + 1}}. <input class="form-control" type="text" ng-model="item.imgSrc"/></h1>
+        </div>
+
+        <img class="emoji-img" ng-src="thrones/{{item.imgSrc}}" alt=""/>
+        <div class="form-inline">
+            <input type="text" class="form-control" ng-model="ans.value" ng-repeat="ans in item.answers">
+        </div>
+    </div>
+
+    <div class="form-inline">
+        <button class="btn btn-primary" ng-click="addEmptyItem()">Add Empty</button>
+    </div>
+    <hr/>
+    <p>
+        Pretty JSON?
+        <input type="checkbox" ng-model="main.pretty"/>
+        <button class="btn btn-primary" ng-click="save()">Save</button>
+    </p>
+    <p><textarea class="form-control json-data" id="" cols="30" rows="20" ng-model="main.json"></textarea></p>
+
+</div>
+
+<script>
+
+    var app = angular.module("app", []);
+
+    app.controller("MainCtrl", function($scope, $http) {
+
+        $http.get("thrones/data.json")
+                .success(function(data, status, headers, config) {
+                    $scope.items = data;
+                    //$scope.items = data.splice(0, 1);
+                });
+
+        $scope.main.pretty = true;
+
+        $scope.addEmptyItem = function() {
+            var id = $scope.items.length;
+            $scope.items.push({
+                id:id,
+                imgSrc:"emoji.png",
+                answers: [
+                    {value:"1", bingo:true},
+                    {value:"2"},
+                    {value:"3"},
+                    {value:"4"}
+                ]
+            })
+        };
+
+        $scope.main.json = undefined;
+        $scope.save = function() {
+            $scope.main.json = angular.toJson($scope.items, $scope.main.pretty);
+
+        }
+    })
+
+</script>
+
+</body>
+</html>
