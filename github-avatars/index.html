@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html ng-app="app">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>GitHub Avatars</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
+
+    <style>
+
+        .avatar {
+        }
+
+        .grid-table-wrapper {
+            float: left;
+            border-radius:10px;
+            padding: 20px;
+            background-color: #F0F0F0;
+            margin-right: 20px;
+            margin-bottom: 20px;
+        }
+
+        .grid-table {
+            display: table;
+            border-collapse: collapse;
+        }
+
+        .grid-row {
+            display:table-row;
+        }
+
+        .grid-cell {
+            display: table-cell;
+            width: 20px;
+            height: 20px;
+            /*border:1px solid black;*/
+        }
+
+        .grid-cell-full {
+            background-color: #A87EDF;
+        }
+
+    </style>
+
+</head>
+<body ng-controller="MainCtrl">
+
+<h1>GitHub Avatars Generator</h1>
+<p><button ng-click="refresh()">Refresh</button></p>
+
+<avatar ng-repeat="item in items" color="{{item.color}}"></avatar>
+
+<script>
+
+    var app = angular.module("app", []);
+
+    app.controller("MainCtrl", function($scope) {
+
+        var colors = ["#DBAD79", "#D3C64E", "#AC7EE3", "#CD5B79", "#C1E28F", "#5ACE68", "#62CCC5"];
+
+        var getRandomColor = function() {
+            var index = Math.floor(Math.random() * colors.length);
+            //console.log("RAND!", index);
+            return colors[index];
+        };
+
+        var createItems = function(num) {
+            $scope.items = [];
+            for (var i = 0; i < num; i++) {
+                $scope.items[i] = {id:i, color:getRandomColor()}
+            }
+        };
+
+
+        $scope.refresh = function() {
+            createItems(40);
+        };
+
+        createItems(40);
+    });
+
+    app.directive("avatar", function() {
+        return {
+            scope:{},
+            replace:true,
+            controller: function($scope) {
+                $scope.grid = [];
+
+                var i, j;
+                for (i = 0; i < 5; i++) {
+                    $scope.grid[i] = [];
+                    for (j = 0; j < 5; j++) {
+                        $scope.grid[i][j] = {value:0};
+                    }
+                }
+
+                for (i = 0; i < 5; i++) {
+                    for (j = 0; j < 3; j++) {
+                        $scope.grid[i][j].value = Math.floor(Math.random() * 2);
+                    }
+                }
+
+                for (i = 0; i < 5; i++) {
+                    $scope.grid[i][3].value = $scope.grid[i][1].value;
+                }
+                for (i = 0; i < 5; i++) {
+                    $scope.grid[i][4].value = $scope.grid[i][0].value;
+                }
+
+
+                //$scope.color = $scope.getRandColor();
+
+            },
+            link:function(scope, el, attrs) {
+                scope.color = attrs.color;
+            },
+            templateUrl:"tmpl/avatar.html"
+        }
+    });
+
+    app.directive("gridCell", function() {
+        return {
+            restrict:"E",
+            replace:true,
+            link:function(scope, el, attrs) {
+                var value = attrs.value;
+                if (value == 1) {
+                    el.css({
+                        "background-color":scope.color
+                    })
+                }
+            },
+            template:"<div class='grid-cell'></div>"
+        }
+    })
+
+
+</script>
+
+</body>
+</html>
