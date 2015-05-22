@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html ng-app="app">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/styles.css"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
+
+</head>
+<body ng-controller="MainCtrl as main">
+
+<div class="container">
+    <h1>I Know Art Editor</h1>
+
+    <div ng-repeat="item in items" class="panel panel-default">
+        <div class="form-inline">
+            <h1>
+                {{item.id + 1}}. <input class="form-control" type="text" ng-model="item.imgSrc"/>
+                <button class="btn btn-primary" ng-click="stickerIncrease(item.sticker)">Sticker +</button>
+                <button class="btn btn-primary" ng-click="stickerDecrease(item.sticker)">Sticker -</button>
+            </h1>
+
+        </div>
+        <div class="poster-holder">
+            <img class="poster-img" ng-src="assets/{{item.imgSrc}}" alt=""/>
+            <sticker draggable></sticker>
+        </div>
+
+        <p><input type="text" class="form-control" placeholder="description" ng-model="item.desc"/></p>
+        <div class="form-inline">
+            <input type="text" class="form-control" ng-model="ans.value" ng-repeat="ans in item.answers">
+        </div>
+    </div>
+
+    <div class="form-inline">
+        <button class="btn btn-primary" ng-click="addEmptyItem()">Add Empty</button>
+    </div>
+    <hr/>
+    <p>
+        Pretty JSON?
+        <input type="checkbox" ng-model="main.pretty"/>
+        <button class="btn btn-primary" ng-click="save()">Save</button>
+    </p>
+    <p><textarea class="form-control json-data" id="" cols="30" rows="20" ng-model="main.json"></textarea></p>
+
+</div>
+
+
+<script src="js/editor.js"></script>
+<script src="js/sticker.js"></script>
+
+</body>
+</html>

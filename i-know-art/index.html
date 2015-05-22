@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html ng-app="app">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/styles.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.16.1/TweenMax.min.js"></script>
+    <script src="libs/angular-scroll.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/1.1.26/howler.min.js"></script>
+
+</head>
+<body ng-controller="MainCtrl as main">
+
+<div class="container">
+    <h1>I Know Art game <small>Can you guess what's under the sticker?</small></h1>
+    <h5>This is a game a made a year ago on canvas. Now it's rebuilt with Angular.</h5>
+    <div ng-repeat="item in items" class="panel panel-default" ng-controller="AnswerCtrl" tween-born>
+
+        <div class="poster-holder">
+            <img disable-drag class="poster-img" ng-src="assets/{{item.imgSrc}}" alt=""/>
+            <h3 class="item-id">{{item.id + 1}}</h3>
+            <img-description></img-description>
+            <sticker></sticker>
+        </div>
+
+        <ul class="list-unstyled clearfix">
+            <li class="quiz-answer" ng-repeat="ans in item.answers" quiz-answer>
+                <span class="glyphicon" answer-icon></span>
+                <span class="quiz-answer-text">{{ans.value | uppercase}}</span>
+            </li>
+        </ul>
+        <!--<button class="btn btn-success btn-lg" ng-click="nextClick()">Next</button>-->
+        <next-button></next-button>
+        <sounds></sounds>
+    </div>
+    <div class="panel panel-default" ng-if="main.gameComplete" tween-born>
+        <h1>Game Complete!</h1>
+        <h3>Congratulations!</h3>
+        <h4>You got <span class="font-big">{{main.correctAnswers}}</span> out of <span class="font-big">{{items.length}}</span> right!</h4>
+    </div>
+</div>
+
+<div class="menu">
+    <p>
+        Sounds <input type="checkbox" ng-model="main.soundsEnabled"/>
+    </p>
+</div>
+
+
+<script src="js/game.js"></script>
+<script src="js/sticker.js"></script>
+
+</body>
+</html>
