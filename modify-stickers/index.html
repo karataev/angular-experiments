@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html ng-app="app">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/sticker.css"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.16.1/TweenMax.min.js"></script>
+
+    <style>
+        .modify-bt {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: #fff;
+            border:2px solid black;
+        }
+
+        .resize-bt {
+            right: 0;
+            bottom: 0;
+            cursor: se-resize;
+        }
+
+        .rotate-bt {
+            right:0;
+            top:0;
+            cursor: crosshair;
+        }
+
+    </style>
+
+</head>
+<body ng-controller="MainCtrl">
+
+<div class="container">
+    <h1>Modify objects <small>Click on a figure to select</small> </h1>
+    <p>Active item: {{curItem}}</p>
+
+    <div sticker draggable ng-repeat="item in items">
+        <p sticker-text>Text</p>
+        <div resizer></div>
+        <div rotator></div>
+    </div>
+    <button-modifier data="curItem"></button-modifier>
+</div>
+
+<script>
+    var app = angular.module("app", []);
+
+    app.controller("MainCtrl", function ($scope) {
+
+        $scope.items = [
+            {
+                name:"Rect 1",
+                css:"shape shape-1",
+                x:300,
+                y:300,
+                width:100,
+                height:100,
+                rotation:20
+            },
+            {
+                name:"Circle 1",
+                css:"shape shape-2",
+                x:500,
+                y:200,
+                width:200,
+                height:200,
+                rotation:0
+            }
+        ]
+
+
+        $scope.selectItem = function (item) {
+            if ($scope.curItem) $scope.curItem.selected = false;
+            $scope.curItem = item;
+            $scope.curItem.selected = true;
+        }
+
+        $scope.selectItem($scope.items[0]);
+    })
+
+</script>
+
+<script src="js/modifiers.js"></script>
+<script src="js/rect-sticker.js"></script>
+
+</body>
+</html>
