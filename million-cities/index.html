@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html ng-app="app">
+<head>
+    <title>Simple Map</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
+
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
+
+    <style>
+
+        #map-holder {
+            width: 100%;
+            height: 500px;
+        }
+
+        .latLng {
+            font-size: 48px;
+            color:green;
+            text-align: center;
+        }
+
+    </style>
+
+
+</head>
+<body ng-controller="MainCtrl">
+<div class="container">
+    <h1>Города-миллионники России</h1>
+    <div>
+        <button ng-repeat="item in items" city-button="{{item.value}}" ></button>
+    </div>
+    <hr/>
+    <h2 lat-lng></h2>
+    <div id="map-holder"></div>
+
+</div>
+
+
+<script>
+
+    var app = angular.module("app", []);
+
+    app.controller("MainCtrl", function ($scope) {
+
+        var mapOptions = {
+            zoom: 8,
+            center: new google.maps.LatLng(0, 0)
+        };
+
+        var map = new google.maps.Map(document.getElementById('map-holder'),
+                mapOptions);
+
+        var geocoder = new google.maps.Geocoder();
+
+        $scope.items = [
+            {value:"Москва"},
+            {value:"Санкт-Петербург"},
+            {value:"Новосибирск"},
+            {value:"Екатеринбург"},
+            {value:"Нижний Новгород"},
+            {value:"Казань"},
+            {value:"Самара"},
+            {value:"Челябинск"},
+            {value:"Омск"},
+            {value:"Ростов-на-Дону"},
+            {value:"Уфа"},
+            {value:"Красноярск"},
+            {value:"Пермь"},
+            {value:"Волгоград"},
+            {value:"Воронеж"}
+        ]
+
+        $scope.model = {
+            lat:undefined,
+            lng:undefined
+        }
+
+        $scope.gotoCity = function(address) {
+            geocoder.geocode( { 'address': address}, function(results, status) {
+                if (status == google.maps.GeocoderStatus.OK) {
+                    var location = results[0].geometry.location;
+                    map.setCenter(location);
+                    $scope.model.lat = location.lat().toFixed(5);
+                    $scope.model.lng = location.lng().toFixed(5);
+                    $scope.$apply();
+                } else {
+                    alert('Geocode was not successful for the following reason: ' + status);
+                }
+            });
+        }
+
+        $scope.gotoCity($scope.items[0].value);
+    })
+
+    app.directive("cityButton", function () {
+        return {
+            controller: function ($scope) {
+                $scope.city = undefined;
+            },
+            link: function (scope, el, attrs) {
+                el.addClass("btn btn-default btn-sm");
+
+                scope.city = attrs.cityButton;
+                el.on("click", function () {
+                    scope.gotoCity(scope.city);
+                })
+            },
+            template:"{{city}}"
+        }
+    })
+
+    app.directive("latLng", function () {
+        return {
+            link: function (scope, el, attrs) {
+                el.addClass("latLng");
+                el.tooltip({
+                    title:"Широта, долгота"
+                })
+            },
+            template:"{{model.lat}} {{model.lng}}"
+        }
+    })
+
+</script>
+
+
+</body>
+</html>
