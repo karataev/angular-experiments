@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html ng-app="app">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
+
+    <link href='http://fonts.googleapis.com/css?family=Tinos:400,700italic' rel='stylesheet' type='text/css'>
+
+    <style>
+
+        .tooltip.bottom {
+            margin-top: 10px;
+        }
+
+        .tooltip-inner {
+            margin-top: 10px;
+            background-color: #ffffff;
+            border:10px solid #F1F1F1;
+            border-radius:0;
+            /*font-size: 14px;*/
+            color: #000000;
+            text-align: left;
+            min-width: 380px;
+            padding: 10px 20px;
+        }
+
+        .tooltip.in {
+            opacity: 1;
+        }
+
+        .tooltip-inner h3 {
+            font:bold italic 24px/1em 'Tinos', Georgia, serif;
+            margin-top: 10px;
+        }
+
+        .tooltip-inner p {
+            font-size: 13px;
+            line-height:14px;
+        }
+
+        .tooltip.bottom .tooltip-arrow {
+            border-bottom-color: #F1F1F1;
+            border-width:0 15px 15px;
+            margin-left:-15px;
+        }
+
+        .img-holder {
+            position: relative;
+        }
+
+        .marker {
+            position: absolute;
+            height: 20px;
+            width: 20px;
+            background-color: #ffffff;
+            border-radius:50%;
+            border: 5px solid #b717e8;
+            cursor: pointer;
+        }
+    </style>
+
+</head>
+<body ng-controller="MainCtrl">
+
+<div class="container">
+    <h1>Бурлаки на Волге. Редактор</h1>
+    <!--<p>{{activeItem}}</p>-->
+    <p><button class="btn btn-primary" ng-click="addMarker()">Добавить маркер</button></p>
+
+    <div class="img-holder">
+        <img src="img/burlaki.jpg" alt=""/>
+        <div marker draggable ng-repeat="item in items"></div>
+    </div>
+    <br/>
+    <div>
+        <input class="form-control" type="text" ng-model="activeItem.heading"/>
+        <input class="form-control" type="text" ng-model="activeItem.content"/>
+    </div>
+    <hr/>
+    <p>
+        Pretty JSON?
+        <input type="checkbox" ng-model="model.pretty"/>
+        <button class="btn btn-primary" ng-click="save()">Save</button>
+    </p>
+    <p><textarea class="form-control json-data" id="" cols="30" rows="20" ng-model="model.json"></textarea></p>
+
+
+</div>
+
+<script>
+
+    var app = angular.module("app", []);
+
+    app.controller("MainCtrl", function ($scope, $http) {
+
+        $scope.model = {
+            pretty:true,
+            json:undefined
+        }
+        $scope.addMarker = function () {
+            var item = {
+                x:0,
+                y:0,
+                heading:"Заголовок",
+                content:"Тело"
+            }
+            $scope.items.push(item);
+        }
+
+        $http.get("data/burlaki.json")
+                .success(function(data, status, headers, config) {
+                    $scope.items = data;
+                });
+
+        $scope.selectItem = function (item) {
+            $scope.activeItem = item;
+        }
+
+        $scope.save = function () {
+            $scope.model.json = angular.toJson($scope.items, $scope.model.pretty);
+        }
+    })
+
+    app.directive("marker", function () {
+        return {
+            link: function (scope, el, attrs) {
+                el.addClass("marker");
+
+                el.on("mousedown", function () {
+                    //scope.$parent.activeItem = scope.item;
+                    scope.selectItem(scope.item);
+                    scope.$apply();
+                })
+/*
+                el.tooltip({
+                    placement:"bottom",
+                    html:true,
+                    title:"<h3>" + scope.item.heading + "</h3>" +
+                    "<p>" + scope.item.content + "</p>"
+                });
+*/
+
+                el.on("mouseover", function () {
+                    el.css({"background-color":"#b717e8"});
+                })
+                el.on("mouseout", function () {
+                    el.css({"background-color":"#ffffff"});
+                })
+
+                scope.$watch("item.x", function (newValue) {
+                    el.css({left:newValue + "px"});
+                })
+                scope.$watch("item.y", function (newValue) {
+                    el.css({top:newValue + "px"});
+                })
+            }
+        }
+    })
+
+    app.directive("draggable", function($document) {
+        return {
+            restrict:"A",
+            link: function(scope, el, attrs) {
+                var startX, startY;
+
+                el.on("mousedown", function(event) {
+                    event.preventDefault();
+
+                    startX = event.pageX - scope.item.x;
+                    startY = event.pageY - scope.item.y;
+                    $document.on("mousemove", mousemove);
+                    $document.on("mouseup", mouseup);
+                });
+
+                function mousemove(event) {
+                    scope.item.y = event.pageY - startY;
+                    scope.item.x = event.pageX - startX;
+                    scope.$apply();
+                }
+
+                function mouseup() {
+                    $document.off("mousemove", mousemove);
+                    $document.off("mouseup", mouseup);
+                }
+            }
+        }
+    });
+
+
+</script>
+
+</body>
+</html>

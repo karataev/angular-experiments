@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html ng-app="app">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
+
+    <link href='http://fonts.googleapis.com/css?family=Tinos:400,700italic' rel='stylesheet' type='text/css'>
+
+    <style>
+
+        .tooltip.bottom {
+            margin-top: 10px;
+        }
+
+        .tooltip-inner {
+            margin-top: 10px;
+            background-color: #ffffff;
+            border:10px solid #F1F1F1;
+            border-radius:0;
+            /*font-size: 14px;*/
+            color: #000000;
+            text-align: left;
+            min-width: 380px;
+            padding: 10px 20px;
+        }
+
+        .tooltip.in {
+            opacity: 1;
+        }
+
+        .tooltip-inner h3 {
+            font:bold italic 24px/1em 'Tinos', Georgia, serif;
+            margin-top: 10px;
+        }
+
+        .tooltip-inner p {
+            font-size: 13px;
+            line-height:14px;
+        }
+
+        .tooltip.bottom .tooltip-arrow {
+            border-bottom-color: #F1F1F1;
+            border-width:0 15px 15px;
+            margin-left:-15px;
+        }
+
+        .img-holder {
+            position: relative;
+        }
+
+        .marker {
+            position: absolute;
+            height: 20px;
+            width: 20px;
+            background-color: #ffffff;
+            border-radius:50%;
+            border: 5px solid #b717e8;
+            cursor: pointer;
+        }
+    </style>
+
+</head>
+<body ng-controller="MainCtrl">
+
+<div class="container">
+    <h1>Бурлаки на Волге</h1>
+    <p>Вдохновение: http://diletant.ru/picture_tutorial/burlaki-na-volge/</p>
+    <p><a href="burlaki-editor.html">Редактор</a></p>
+
+    <div class="img-holder">
+        <img src="img/burlaki.jpg" alt=""/>
+        <div marker ng-repeat="item in items"></div>
+    </div>
+
+</div>
+
+<script>
+
+    var app = angular.module("app", []);
+
+    app.controller("MainCtrl", function ($scope, $http) {
+
+        $http.get("data/burlaki.json")
+                .success(function(data, status, headers, config) {
+                    $scope.items = data;
+                });
+    })
+
+    app.directive("marker", function () {
+        return {
+            link: function (scope, el, attrs) {
+                el.addClass("marker");
+                el.css({
+                    left:scope.item.x + "px",
+                    top:scope.item.y + "px"
+                })
+
+                el.tooltip({
+                    placement:"bottom",
+                    html:true,
+                    title:"<h3>" + scope.item.heading + "</h3>" +
+                    "<p>" + scope.item.content + "</p>"
+                });
+
+                el.on("mouseover", function () {
+                    el.css({"background-color":"#b717e8"});
+                })
+                el.on("mouseout", function () {
+                    el.css({"background-color":"#ffffff"});
+                })
+            }
+        }
+    })
+
+</script>
+
+</body>
+</html>
