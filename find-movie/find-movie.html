@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html ng-app="app">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
+
+</head>
+<body ng-controller="MainCtrl">
+
+<div class="container">
+    <div class="form-group well">
+        <h1>Find a movie <small>with OMDb API</small></h1>
+        <h5><small>Russian movies are not supported :(</small></h5>
+        <div class="row">
+            <div class="col-xs-12 col-sm-6">
+                <form>
+                    <div class="input-group">
+                        <input type="text" class="form-control" ng-model="userInput" placeholder="movie title">
+                        <div class="input-group-btn">
+                            <button type="submit" class="btn btn-primary" ng-click="search()">Search</button>
+                        </div>
+                    </div>
+                </form>
+                <br/>
+            </div>
+        </div>
+        <div ng-if="request">Request: {{request}}</div>
+    </div>
+
+    <div class="well" ng-if="movie && movie.Response === 'True'">
+        <h2>Title: {{movie.Title}}</h2>
+        <h4>Year: {{movie.Year}}</h4>
+        <h4>IMDB Rating: {{movie.imdbRating}}</h4>
+        <h4>IMDB Votes: {{movie.imdbVotes | number}}</h4>
+        <p>{{movie.Plot}}</p>
+        <img ng-if="movie && movie.Poster !== 'N/A'" ng-src="{{movie.Poster}}" alt=""/>
+        <hr/>
+        <p>{{movie}}</p>
+    </div>
+    <div class="alert alert-danger" ng-if="movie && movie.Response === 'False'">
+        <h1>Oops, movie not found</h1>
+        <p>{{movie}}</p>
+    </div>
+</div>
+
+
+<script>
+
+    var app = angular.module("app", []);
+
+    app.controller("MainCtrl", function ($scope, $http) {
+
+        $scope.userInput = undefined;
+        $scope.movie = undefined;
+        $scope.request = undefined;
+
+        $scope.search = function () {
+            $scope.movie = undefined;
+            $scope.request = encodeURI("http://omdbapi.com/?t=" + $scope.userInput);
+            $http.get($scope.request)
+                    .success(function (data) {
+                        //console.log(data);
+                        $scope.movie = data;
+                    })
+        }
+    })
+
+</script>
+
+</body>
+</html>
