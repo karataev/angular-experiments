@@ -71,7 +71,7 @@
                 <label for="numFriends">Number of friends</label>
                 <input type="text" id="numFriends" ng-model="numFriends" class="form-control"/>
             </div>
-            <button class="btn btn-default" ng-click="startGame(numFriends)">Поехали</button>
+            <button class="btn btn-default" ng-click="startGame(idToFind, numFriends)">Поехали</button>
         </form>
     </div>
 
@@ -113,9 +113,9 @@
 
         $scope.gameState = 'intro';
 
-        $scope.startGame = function (amount) {
-            getUser($scope.idToFind);
-            getFriends($scope.idToFind, amount);
+        $scope.startGame = function (idToFind, amount) {
+            getUser(idToFind);
+            getFriends(idToFind, amount);
         }
 
         var getUser = function (uid) {
