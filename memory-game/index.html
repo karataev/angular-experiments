@@ -41,29 +41,29 @@
 
         var vm = this;
 
-        var data = [
-            {value:0, img:'smiley01.png'},
-            {value:0, img:'smiley01.png'},
-            {value:1, img:'smiley11.png'},
-            {value:1, img:'smiley11.png'},
-            {value:2, img:'smiley12.png'},
-            {value:2, img:'smiley12.png'},
-            {value:3, img:'smiley15.png'},
-            {value:3, img:'smiley15.png'},
-            {value:4, img:'smiley33.png'},
-            {value:4, img:'smiley33.png'},
-            {value:5, img:'smiley35.png'},
-            {value:5, img:'smiley35.png'},
-            {value:6, img:'smiley41.png'},
-            {value:6, img:'smiley41.png'},
-            {value:7, img:'smiley48.png'},
-            {value:7, img:'smiley48.png'}
-        ]
-
         var createCards = function () {
+            var data = [
+                {value:0, img:'smiley01.png'},
+                {value:0, img:'smiley01.png'},
+                {value:1, img:'smiley11.png'},
+                {value:1, img:'smiley11.png'},
+                {value:2, img:'smiley12.png'},
+                {value:2, img:'smiley12.png'},
+                {value:3, img:'smiley15.png'},
+                {value:3, img:'smiley15.png'},
+                {value:4, img:'smiley33.png'},
+                {value:4, img:'smiley33.png'},
+                {value:5, img:'smiley35.png'},
+                {value:5, img:'smiley35.png'},
+                {value:6, img:'smiley41.png'},
+                {value:6, img:'smiley41.png'},
+                {value:7, img:'smiley48.png'},
+                {value:7, img:'smiley48.png'}
+            ]
+
             //var newData = data.splice(0, 2);
-            var newData = data;
-            vm.cards = _.shuffle(newData);
+            //var newData = data;
+            vm.cards = _.shuffle(data);
         }
 
         $scope.selectCard = function (card) {
