@@ -27,6 +27,9 @@
         </div>
         <button class="btn btn-primary" ng-click="ctrl.ready()">Готов!</button>
     </div>
+    <div class="panel panel-default" ng-if="ctrl.authCanceled === true">
+        <div class="alert alert-danger">Авторизоваться не удалось :(</div>
+    </div>
     <div class="panel panel-default" ng-if="ctrl.loginUser">
         <span class="label label-success">Авторизация прошла успешно</span>
         <h3>{{ctrl.loginUser.first_name}} {{ctrl.loginUser.last_name}}</h3>
@@ -90,13 +93,18 @@
         var vm = this;
 
         vm.otherId = undefined;
-        vm.loginUser = undefined;
-        vm.infoUser = undefined;
+
+        var initVars = function () {
+            vm.loginUser = undefined;
+            vm.infoUser = undefined;
+            vm.authCanceled = undefined;
+        }
+
+        initVars();
 
         vm.ready = function () {
 
-            vm.loginUser = undefined;
-            vm.infoUser = undefined;
+            initVars();
 
             if (vm.otherId) {
                 getDetails(vm.otherId);
@@ -120,6 +128,8 @@
                     }
                 } else {
                     console.log("canceled");
+                    vm.authCanceled = true;
+                    $scope.$apply();
                     /* Пользователь нажал кнопку Отмена в окне авторизации */
                 }
             });
