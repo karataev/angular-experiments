@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html ng-app="app">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>One-time binding</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>-->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
+
+</head>
+<body ng-controller="MainCtrl as ctrl">
+
+<div class="container">
+    <h1>One-time binding example <small>to increase performance</small></h1>
+    <h5><a href="http://toddmotto.com/angular-one-time-binding-syntax/">More info</a></h5>
+    <input type="text" class="form-control" ng-model="ctrl.input1"/>
+    <h2>{{ctrl.input1}}</h2>
+    <hr/>
+    <input type="text" class="form-control" ng-model="ctrl.input2"/>
+    <h2>{{::ctrl.input2}}</h2>
+</div>
+
+<script>
+
+    var app = angular.module("app", []);
+
+    app.controller("MainCtrl", function () {
+        this.input1 = "type something here";
+        this.input2 = "and here";
+    })
+
+</script>
+
+</body>
+</html>
