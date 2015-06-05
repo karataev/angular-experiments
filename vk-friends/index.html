@@ -33,7 +33,7 @@
     </style>
 
 </head>
-<body ng-controller="MainCtrl">
+<body ng-controller="MainCtrl as ctrl">
 
 <div class="container">
     <h1>Get VK User's Friends</h1>
@@ -41,15 +41,17 @@
     <form class="form-inline">
         <div class="well my-input-group">
             <label for="userId">User ID</label>
-            <input type="text" id="userId" class="form-control" ng-model="idToFind"/>
+            <input type="text" id="userId" class="form-control" ng-model="ctrl.idToFind"/>
             <label for="numFriends">Number of friends</label>
-            <input type="text" id="numFriends" ng-model="numFriends" class="form-control"/>
-            <button type="submit" class="btn btn-default" ng-click="search()">Get</button>
+            <input type="text" id="numFriends" ng-model="ctrl.numFriends" class="form-control"/>
+            <label for="hideEmptyAvatar">Hide empty avatars?</label>
+            <input type="checkbox" id="hideEmptyAvatar" ng-model="ctrl.hideEmptyAvatar"/>
+            <button type="submit" class="btn btn-default" ng-click="ctrl.search()">Get</button>
         </div>
     </form>
-    <div class="panel panel-default" ng-if="friends">
-        <h2>{{user.first_name}} {{user.last_name}}. Друзья. {{friends.length}}</h2>
-        <friend-avatar ng-repeat="friend in friends"></friend-avatar>
+    <div class="panel panel-default" ng-if="ctrl.friends">
+        <h2>{{ctrl.user.first_name}} {{ctrl.user.last_name}}. Друзья. {{ctrl.friends.length}}</h2>
+        <friend-avatar ng-repeat="friend in ctrl.friends"></friend-avatar>
     </div>
 </div>
 
@@ -67,32 +69,41 @@
     var app = angular.module("app", []);
 
     app.controller("MainCtrl", function ($scope) {
+        var vm = this;
+        vm.idToFind = 1144455;
+        vm.numFriends = 5;
+        vm.hideEmptyAvatar = true;
+        vm.user = undefined;
+        vm.friends = undefined;
 
-        $scope.idToFind = 1;
-        $scope.numFriends = 10;
-        $scope.user = undefined;
-        $scope.friends = undefined;
-
-
-        $scope.search = function () {
-            getUser($scope.idToFind);
-            getFriends($scope.idToFind, $scope.numFriends);
+        vm.search = function () {
+            getUser();
+            getFriends();
         }
 
-        var getUser = function (uid) {
-            VK.Api.call('users.get', {uids: uid, fields:"photo_100"}, function(r) {
+        var getUser = function () {
+            VK.Api.call('users.get', {uids: vm.idToFind, fields:"photo_100"}, function(r) {
                 if(r.response) {
-                    $scope.user = r.response[0];
+                    vm.user = r.response[0];
                     $scope.$apply();
                 }
             });
         }
 
-        var getFriends = function (uid, amount) {
-            VK.Api.call("friends.get", {user_id:uid, order:'random', fields:'photo_100', count:amount}, function (r) {
+        var getFriends = function () {
+            VK.Api.call("friends.get", {user_id:vm.idToFind, order:'random', fields:'photo_100', count:vm.numFriends}, function (r) {
                 if (r.response) {
                     //console.log("!", r.response);
-                    $scope.friends = r.response;
+                    var friends = r.response;
+
+                    if (vm.hideEmptyAvatar) {
+                        friends = friends.filter(function (x) {
+                            //console.log(x.photo_100);
+                            return !x.deactivated && !(x.photo_100 === 'https://vk.com/images/camera_100.png');
+                        })
+                    }
+
+                    vm.friends = friends;
                     $scope.$apply();
                 }
             })
