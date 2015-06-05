@@ -1,0 +1,14 @@
+
+<div>
+    <form class="form-inline">
+        <div class="well my-input-group">
+            <label for="userId">User ID</label>
+            <input type="text" id="userId" class="form-control" ng-model="getCtrl.uid"/>
+            <label for="amount">Amount of avas</label>
+            <input type="text" id="amount" ng-model="getCtrl.amount" class="form-control"/>
+            <label for="hideEmptyAvatar">Hide empty?</label>
+            <input type="checkbox" id="hideEmptyAvatar" ng-model="getCtrl.hideEmpty"/>
+            <button type="submit" class="btn btn-default" ng-click="getCtrl.searchClick()">Get</button>
+        </div>
+    </form>
+</div>
