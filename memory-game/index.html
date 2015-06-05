@@ -1,10 +1,181 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="app">
 <head lang="en">
     <meta charset="UTF-8">
     <title></title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>-->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.16.1/TweenMax.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+
+    <link rel="stylesheet" href="css/styles.css"/>
+
 </head>
-<body>
+<body ng-controller="MainCtrl as ctrl">
+
+<div class="container">
+    <div class="panel panel-default">
+        <h3>Emoji Memory Game</h3>
+    </div>
+    <div class="wrapper">
+        <ul class="grid">
+            <my-card ng-repeat="card in ctrl.cards" class="card">
+            </my-card>
+        </ul>
+    </div>
+
+    <div class="panel panel-default" ng-if="ctrl.levelComplete">
+        <h1>The game is complete! Hooray!</h1>
+        <button class="btn btn-primary" ng-click="restartClick()">Again?</button>
+    </div>
+
+</div>
+
+<script>
+    var app = angular.module("app", []);
+
+    app.controller("MainCtrl", function ($scope) {
+
+        var vm = this;
+
+        var data = [
+            {value:0, img:'smiley01.png'},
+            {value:0, img:'smiley01.png'},
+            {value:1, img:'smiley11.png'},
+            {value:1, img:'smiley11.png'},
+            {value:2, img:'smiley12.png'},
+            {value:2, img:'smiley12.png'},
+            {value:3, img:'smiley15.png'},
+            {value:3, img:'smiley15.png'},
+            {value:4, img:'smiley33.png'},
+            {value:4, img:'smiley33.png'},
+            {value:5, img:'smiley35.png'},
+            {value:5, img:'smiley35.png'},
+            {value:6, img:'smiley41.png'},
+            {value:6, img:'smiley41.png'},
+            {value:7, img:'smiley48.png'},
+            {value:7, img:'smiley48.png'}
+        ]
+
+        var createCards = function () {
+            //var newData = data.splice(0, 2);
+            var newData = data;
+            vm.cards = _.shuffle(newData);
+        }
+
+        $scope.selectCard = function (card) {
+            if (vm.card1) {
+                vm.card2 = card;
+            } else {
+                vm.card1 = card;
+            }
+
+            if (vm.card1 && vm.card2) {
+                if (vm.card1.value === vm.card2.value) {
+                    vm.card1.complete = true;
+                    vm.card2.complete = true;
+                    maybeLevelComplete();
+                } else {
+                    vm.card1.rotateFront = true;
+                    vm.card2.rotateFront = true;
+                }
+                vm.card1 = undefined;
+                vm.card2 = undefined;
+            }
+        }
+
+        var maybeLevelComplete = function () {
+            var isComplete = _.every(vm.cards, function (x) {
+                return x.complete;
+            });
+            if (isComplete) vm.levelComplete = true;
+        }
+
+        var startLevel = function () {
+            vm.cards = undefined;
+            vm.card1 = undefined;
+            vm.card2 = undefined;
+            vm.levelComplete = undefined;
+            createCards();
+        }
+
+        startLevel();
+
+        $scope.restartClick = function () {
+            startLevel();
+        }
+    })
+
+    app.directive("myCard", function () {
+        return {
+            link: function (scope, el, attrs) {
+                el.addClass('card');
+                var $front = $(el).find(".front");
+                var $back = $(el).find(".back");
+                TweenMax.set($back, {rotationY:180});
+                $back.css({
+                    "background-image": 'url(images/' + scope.card.img + ')'
+                })
+
+                var isRotating = false;
+
+                var rotateToBack = function () {
+                    isRotating = true;
+                    TweenMax.to($front, 0.5, {rotationY:"-180deg"});
+                    TweenMax.to($back, 0.5, {rotationY:"0deg", onComplete:rotateToBackComplete});
+                }
+
+                var rotateToBackComplete = function () {
+                    isRotating = false;
+                    scope.selectCard(scope.card);
+                    scope.$apply();
+                }
+
+                var rotateToFront = function() {
+                    isRotating = true;
+                    TweenMax.to($front, 0.5, {rotationY:"0deg"});
+                    TweenMax.to($back, 0.5, {rotationY:"180deg", onComplete:rotateToFrontComplete});
+                }
+
+                var rotateToFrontComplete = function () {
+                    isRotating = false;
+                }
+
+                $front.on("click", function () {
+                    if (isRotating) return;
+                    rotateToBack();
+                })
+
+                scope.$watch('card.rotateFront', function (newVal) {
+                    if (newVal === true) {
+                        scope.card.rotateFront = false;
+                        isRotating = true;
+                        rotateToFront();
+                    }
+                })
+
+                scope.$watch('card.complete', function (newVal) {
+                    if (newVal === true) {
+                        $front.off();
+                    }
+                })
+
+            },
+            replace:true,
+            template: [
+                    '<li>',
+                    '<div class="front">?</div>',
+                    '<div class="back">',
+                    '</div>',
+                    '</li>'
+            ].join('')
+        }
+    })
+
+</script>
 
 </body>
 </html>
