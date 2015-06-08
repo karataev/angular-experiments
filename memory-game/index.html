@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html ng-app="app">
+<html>
 <head lang="en">
     <meta charset="UTF-8">
     <title></title>
@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="css/styles.css"/>
 
 </head>
-<body ng-controller="MainCtrl as ctrl">
+<body ng-app="app" ng-controller="MainCtrl as ctrl">
 
 <div class="container">
     <div class="panel panel-default">
@@ -120,39 +120,38 @@
                     "background-image": 'url(images/' + scope.card.img + ')'
                 })
 
-                var isRotating = false;
+                var rotateTime = 0.5;
+
+                var clickHandler = function (e) {
+                    $front.off();
+                    rotateToBack();
+                }
+                $front.on("click", clickHandler);
 
                 var rotateToBack = function () {
-                    isRotating = true;
-                    TweenMax.to($front, 0.5, {rotationY:"-180deg"});
-                    TweenMax.to($back, 0.5, {rotationY:"0deg", onComplete:rotateToBackComplete});
+                    TweenMax.to($front, rotateTime, {rotationY:"-180deg"});
+                    TweenMax.to($back, rotateTime, {rotationY:"0deg", onComplete:rotateToBackComplete});
                 }
 
                 var rotateToBackComplete = function () {
-                    isRotating = false;
                     scope.selectCard(scope.card);
                     scope.$apply();
                 }
 
                 var rotateToFront = function() {
-                    isRotating = true;
-                    TweenMax.to($front, 0.5, {rotationY:"0deg"});
-                    TweenMax.to($back, 0.5, {rotationY:"180deg", onComplete:rotateToFrontComplete});
+
+                    TweenMax.to($front, rotateTime, {rotationY:"0deg"});
+                    TweenMax.to($back, rotateTime, {rotationY:"180deg", onComplete:rotateToFrontComplete});
                 }
 
                 var rotateToFrontComplete = function () {
-                    isRotating = false;
+                    $front.on("click", clickHandler);
                 }
-
-                $front.on("click", function () {
-                    if (isRotating) return;
-                    rotateToBack();
-                })
 
                 scope.$watch('card.rotateFront', function (newVal) {
                     if (newVal === true) {
                         scope.card.rotateFront = false;
-                        isRotating = true;
+
                         rotateToFront();
                     }
                 })
