@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>A 90-years human life in years</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+
+    <style>
+
+        .page-title {
+            color: #000080;
+        }
+
+        .page-title span {
+            color: #CB0509;
+        }
+
+        .age-form input[type='number'] {
+            width: 100px;
+        }
+
+        .year-item {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border:1px solid #D8D8D8;
+            margin-right: 5px;
+            margin-bottom: 5px;
+            text-align: center;
+            transition:background-color 0.5s;
+        }
+        .year-first {
+            border:5px solid #0080FF;
+        }
+
+        .year-last {
+            border:5px solid #902683;
+        }
+
+        .year-lived {
+            background-color: #E36824;
+        }
+
+    </style>
+
+</head>
+<body ng-app="app" ng-controller="MainCtrl as ctrl">
+
+<div class="container">
+    <h1 class="page-title">A 90-years Human Life in <span>Years</span></h1>
+
+    <form class="form-inline age-form well">
+        <label>What is your age?</label>
+        <input type="number" class="form-control" placeholder="what is your age?" ng-model="ctrl.age"/>
+        <button type="submit" class="btn btn-primary" ng-click="ctrl.setAge(ctrl.age)">OK</button>
+    </form>
+    <span ng-repeat="item in ctrl.items">
+        <year-item></year-item>
+        <br ng-if="($index + 1) %10 === 0"/>
+    </span>
+</div>
+
+<script>
+
+    var app = angular.module("app", []);
+
+    app.controller("MainCtrl", function () {
+        var ctrl = this;
+
+        ctrl.items = _.range(90).map(function (x) {
+            return {year:x + 1, lived:false};
+        });
+        ctrl.items[0].first = true;
+        ctrl.items[ctrl.items.length - 1].last = true;
+        //console.log(this.items);
+
+        ctrl.age = 10;
+        ctrl.setAge = function (age) {
+            clear();
+            ctrl.items
+                    .filter(function (x) {
+                        return x.year <= age;
+                    })
+                    .forEach(function (x) {
+                        x.lived = true;
+                    })
+
+
+            //console.table(this.items);
+        }
+
+        var clear = function () {
+            ctrl.items
+                    .forEach(function (x) {
+                        x.lived = false;
+                    })
+        }
+
+    })
+
+    app.directive("yearItem", function () {
+        return {
+            link: function (scope, el, attrs) {
+                el.addClass("year-item");
+                var title = scope.item.year;
+                if (scope.item.first) {
+                    title = "Birth";
+                    el.addClass("year-first");
+                }
+                else if (scope.item.last) {
+                    title = "Turning 90";
+                    el.addClass("year-last");
+                }
+
+                el.tooltip({
+                    placement:"top",
+                    title:title
+                });
+
+                scope.$watch("item.lived", function (newVal) {
+                    if (newVal === true) {
+                        el.addClass("year-lived");
+                    }
+                    else if (newVal === false) {
+                        el.removeClass("year-lived");
+                    }
+                })
+            },
+            replace:true,
+            template:'<div></div>'
+        }
+    })
+
+</script>
+
+</body>
+</html>
