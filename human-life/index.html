@@ -2,13 +2,15 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
-    <title>A 90-years human life in years</title>
+    <title>A 90-years human life in weeks</title>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.min.js"></script>
+    <script src="libs/bday-picker.min.js"></script>
 
     <style>
 
@@ -24,26 +26,38 @@
             width: 100px;
         }
 
-        .year-item {
+        .item-holder {
+/*
+            font-size:0;
+            line-height: 2px;
+*/
+        }
+
+        .month-item {
             display: inline-block;
-            width: 40px;
-            height: 40px;
+            width: 15px;
+            height: 15px;
             border:1px solid #D8D8D8;
-            margin-right: 5px;
-            margin-bottom: 5px;
-            text-align: center;
-            transition:background-color 0.5s;
+            margin-right: 1px;
+            margin-bottom: 1px;
+            /*transition:background-color 0.5s;*/
         }
-        .year-first {
-            border:5px solid #0080FF;
-        }
-
-        .year-last {
-            border:5px solid #902683;
+        .item-first {
+            border:2px solid #0080FF;
         }
 
-        .year-lived {
+        .item-last {
+            border:2px solid #902683;
+        }
+
+        .item-lived {
             background-color: #E36824;
+        }
+
+        .items-row {
+            font-size: 1px;
+            line-height: 1;
+            /*display: inline-block;*/
         }
 
     </style>
@@ -52,17 +66,13 @@
 <body ng-app="app" ng-controller="MainCtrl as ctrl">
 
 <div class="container">
-    <h1 class="page-title">A 90-years Human Life in <span>Years</span></h1>
+    <h1 class="page-title">A 90-years Human Life in <span>Weeks</span></h1>
 
-    <form class="form-inline age-form well">
-        <label>What is your age?</label>
-        <input type="number" class="form-control" placeholder="what is your age?" ng-model="ctrl.age"/>
-        <button type="submit" class="btn btn-primary" ng-click="ctrl.setAge(ctrl.age)">OK</button>
-    </form>
-    <span ng-repeat="item in ctrl.items">
-        <year-item></year-item>
-        <br ng-if="($index + 1) %10 === 0"/>
-    </span>
+    <bday-picker></bday-picker>
+    <h3 ng-if="ctrl.weeksBehind != undefined">You've already lived {{ctrl.weeksBehind}} weeks</h3>
+    <div ng-repeat="row in ctrl.tableItems" class="items-row">
+        <month-item ng-repeat="item in row"></month-item>
+    </div>
 </div>
 
 <script>
@@ -72,26 +82,31 @@
     app.controller("MainCtrl", function () {
         var ctrl = this;
 
-        ctrl.items = _.range(90).map(function (x) {
-            return {year:x + 1, lived:false};
+        ctrl.items = _.range(90*52).map(function (x) {
+            return {value:x + 1, lived:false};
         });
         ctrl.items[0].first = true;
         ctrl.items[ctrl.items.length - 1].last = true;
         //console.log(this.items);
 
-        ctrl.age = 10;
-        ctrl.setAge = function (age) {
+        ctrl.calcTimeBehind = function () {
+            var day = $("select.birth-day").val();
+            var month = $("select.birth-month").val();
+            var year = $("select.birth-year").val();
+            //console.log(day, month, year);
+
+            var a = moment();
+            var b = moment(day + "-" + month + "-" + year, "DD-MM-YYYY");
+            ctrl.weeksBehind = a.diff(b, 'weeks');
+
             clear();
             ctrl.items
                     .filter(function (x) {
-                        return x.year <= age;
+                        return x.value <= ctrl.weeksBehind;
                     })
                     .forEach(function (x) {
                         x.lived = true;
                     })
-
-
-            //console.table(this.items);
         }
 
         var clear = function () {
@@ -101,20 +116,34 @@
                     })
         }
 
+        var createTable = function (arr, cols) {
+            var table = [];
+            var rows = arr.length / cols;
+            for (var i = 0; i < rows; i++) {
+                table[i] = [];
+                for (var j = 0; j < cols; j++) {
+                    var index = i * cols + j;
+                    table[i][j] = arr[index];
+                }
+            }
+            return table;
+        }
+
+        ctrl.tableItems = createTable(ctrl.items, 52);
     })
 
-    app.directive("yearItem", function () {
+    app.directive("monthItem", function () {
         return {
             link: function (scope, el, attrs) {
-                el.addClass("year-item");
-                var title = scope.item.year;
+                el.addClass("month-item");
+                var title = "week " + scope.item.value;
                 if (scope.item.first) {
-                    title = "Birth";
-                    el.addClass("year-first");
+                    title = "Your birth";
+                    el.addClass("item-first");
                 }
                 else if (scope.item.last) {
-                    title = "Turning 90";
-                    el.addClass("year-last");
+                    title = "90 years";
+                    el.addClass("item-last");
                 }
 
                 el.tooltip({
@@ -124,10 +153,10 @@
 
                 scope.$watch("item.lived", function (newVal) {
                     if (newVal === true) {
-                        el.addClass("year-lived");
+                        el.addClass("item-lived");
                     }
                     else if (newVal === false) {
-                        el.removeClass("year-lived");
+                        el.removeClass("item-lived");
                     }
                 })
             },
@@ -135,6 +164,23 @@
             template:'<div></div>'
         }
     })
+
+    app.directive("bdayPicker", function () {
+        return {
+            link: function (scope, le, attrs) {
+                $(".bday-picker").birthdaypicker({
+                    defaultDate: "10-05-1984"
+                });
+            },
+            replace:true,
+            template:'<div class="well">' +
+            '<h3>What is your birthday?</h3>' +
+            '<div class="bday-picker"></div>' +
+            '<button class="btn btn-default" ng-click="ctrl.calcTimeBehind()">OK</button>' +
+            '</div>'
+        }
+    })
+
 
 </script>
 
