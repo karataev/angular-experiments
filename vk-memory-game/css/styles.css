@@ -8,9 +8,12 @@ body {
     font-family: sans-serif;
 }
 
+.intro {
+    text-align: center;
+}
+
 .title {
     color: #ffffff;
-    text-align: center;
 }
 
 .friend-avatar {

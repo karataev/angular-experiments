@@ -18,7 +18,10 @@
 
 <div class="container">
     <!--<ava-options></ava-options>-->
-    <h1 class="title">Play memory game with friends!</h1>
+    <div class="intro">
+        <h1 class="title">Play memory game with friends!</h1>
+        <bt-login></bt-login>
+    </div>
 <!--
     <div ng-if="ctrl.cardsData">
         <img ng-repeat="card in ctrl.cardsData" ng-src="{{card.img}}" alt=""/>
@@ -46,9 +49,28 @@
         vm.cardsData = undefined;
         vm.cards = undefined;
 
-        avaService.getAvas(1144455, 20, true, function (pics) {
-            $rootScope.$broadcast('updateAvas', pics);
-        });
+        vm.loginVK = function () {
+            VK.Auth.login(function(response) {
+                if (response.session) {
+                    console.log("success");
+                    var user = response.session.user;
+                    //console.log(user);
+                    avaService.getAvas(user.id, 20, true, function (pics) {
+                        $rootScope.$broadcast('updateAvas', pics);
+                    });
+                    //$scope.$apply();
+
+                    /* Пользователь успешно авторизовался */
+                    if (response.settings) {
+                        /* Выбранные настройки доступа пользователя, если они были запрошены */
+                        console.log("settings");
+                    }
+                } else {
+                    console.log("canceled");
+                    /* Пользователь нажал кнопку Отмена в окне авторизации */
+                }
+            });
+        }
 
         $rootScope.$on('updateAvas', function (e, pics) {
             vm.cardsData = [];
@@ -229,6 +251,19 @@
                 '</div>',
                 '</li>'
             ].join('')
+        }
+    })
+
+    app.directive("btLogin", function () {
+        return {
+            link: function (scope, el, attrs) {
+                el.on("click", function () {
+                    el.attr("disabled", "");
+                    scope.ctrl.loginVK();
+                })
+            },
+            replace:true,
+            template:'<button class="btn btn-primary">Login with VK</button>'
         }
     })
 
