@@ -1,0 +1,35 @@
+{
+  "date": 1421384400000,
+  "events": [
+    {
+      "name": "Casual Friday",
+      "from": 1421384400000,
+      "to": 1421470800000,
+      "where": ""
+    },
+    {
+      "name": "Taco Time",
+      "from": 1421431200000,
+      "to": 1421438400000,
+      "where": "Brooklyn Taco Co. 120 Essex Street New York, NY 10002"
+    },
+    {
+      "name": "Pottery Painting",
+      "from": 1421449200000,
+      "to": 1421452800000,
+      "where": "The Art Cafe CH 326 Troy Avenue Brooklyn, NY 11213"
+    },
+    {
+      "name": "Running",
+      "from": 1421456400000,
+      "to": 1421458200000,
+      "where": ""
+    },
+    {
+      "name": "Grocery Shopping",
+      "from": 1421460000000,
+      "to": 1421461800000,
+      "where": ""
+    }
+  ]
+}
