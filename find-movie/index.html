@@ -14,7 +14,7 @@
 
 <div class="container">
     <div class="form-group well">
-        <h1>Find a movie <small>with OMDb API</small></h1>
+        <h1 class="page-header">Find a movie <small>with OMDb API</small></h1>
         <h5><small>Russian movies are not supported :(</small></h5>
         <div class="row">
             <div class="col-xs-12 col-sm-6">
@@ -41,7 +41,7 @@
         <!--no permission when online :(( works fine when at localhost though!-->
         <!--<img ng-if="movie && movie.Poster !== 'N/A'" ng-src="{{movie.Poster}}" alt=""/>-->
         <hr/>
-        <p>{{movie}}</p>
+        <pre>{{movie | json}}</pre>
     </div>
     <div class="alert alert-danger" ng-if="movie && movie.Response === 'False'">
         <h1>Oops, movie not found</h1>

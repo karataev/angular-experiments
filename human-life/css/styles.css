@@ -1,0 +1,45 @@
+
+.container {
+    border:1px solid black;
+    min-width: 900px;
+    margin-bottom: 100px;
+}
+
+.page-title {
+    color: #000080;
+}
+
+.page-title span {
+    color: #CB0509;
+}
+
+.age-form input[type='number'] {
+    width: 100px;
+}
+
+.week-item {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    border:1px solid #D8D8D8;
+    margin-right: 1px;
+    margin-bottom: 1px;
+    /*transition:background-color 0.5s;*/
+}
+.item-first {
+    border:2px solid #0080FF;
+}
+
+.item-last {
+    border:2px solid #902683;
+}
+
+.item-lived {
+    background-color: #E36824;
+}
+
+.items-row {
+    font-size: 1px;
+    line-height: 1;
+    /*display: inline-block;*/
+}
