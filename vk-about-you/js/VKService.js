@@ -19,7 +19,7 @@ app.factory('VKService', function () {
           console.log("success");
           success(response.session.user);
           if (response.settings) {
-            /* Выбранные настройки доступа пользователя, если они были запрошены */
+            /* Р’С‹Р±СЂР°РЅРЅС‹Рµ РЅР°СЃС‚СЂРѕР№РєРё РґРѕСЃС‚СѓРїР° РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ, РµСЃР»Рё РѕРЅРё Р±С‹Р»Рё Р·Р°РїСЂРѕС€РµРЅС‹ */
             console.log("settings");
           }
         } else {
