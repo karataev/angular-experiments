@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css"/>
+
+</head>
+<body ng-app="app" ng-controller="MainCtrl as main">
+
+<div class="container">
+    <div class="panel panel-default">
+        <h1 class="page-header">Поиск issues репозитория на GitHub</h1>
+        <div class="row">
+            <div class="col-md-6">
+                <input type="text" class="form-control" ng-model="main.username" placeholder="Имя пользователя"/>
+                <input type="text" class="form-control" ng-model="main.repo" placeholder="Название репозитория"/>
+                <button class="btn btn-primary bt-search" ng-click="main.search()">Поиск</button>
+            </div>
+        </div>
+        <div ng-if="main.data" class="well">
+            <div class="panel panel-default" ng-repeat="item in main.data.items">
+                <h4>{{item.number}}. {{item.title}}</h4>
+                <h5>Открыт: {{item.created_at}}</h5>
+                <h4>Автор: <a href="{{item.user.html_url}}" target="_blank">{{item.user.login}}</a></h4>
+                <img class="github-avatar" ng-src="{{item.user.avatar_url}}" alt=""/>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
+
+<script>
+    var app = angular.module("app", []);
+
+    app.controller("MainCtrl", function (GitHub) {
+        var main = this;
+
+        main.username = "abecoffman";
+        main.repo = "birthdaypicker";
+        main.data = undefined;
+
+        main.search = function (query) {
+            main.data = undefined;
+
+            var promise = GitHub.searchIssues(main.username, main.repo);
+            promise.then(
+                    function success(obj) {
+                        main.data = obj.data;
+                    },
+                    function error() {
+                        console.log("error :(");
+                    }
+            )
+
+        }
+    })
+
+    app.factory('GitHub', function ($http) {
+        return {
+            searchIssues: function (username, repo) {
+                var query = "repo:" + username + "/" + repo;
+                return $http.get('https://api.github.com/search/issues', { params: { q: query } });
+            }
+        }
+    })
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,13 @@
+
+.panel-default {
+    padding: 10px;
+}
+
+.github-avatar {
+    width: 100px;
+    height: 100px;
+}
+
+input[type='text'], .bt-search {
+    margin-bottom: 5px;
+}
