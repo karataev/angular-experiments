@@ -1,0 +1,15 @@
+
+<div class="panel panel-default">
+    <h1>Детальное описание issue #{{vm.item.number}}</h1>
+    <h3>id: {{vm.item.id}}</h3>
+    <h3>Title: {{vm.item.title}}</h3>
+    <h3>Description: {{vm.item.body}}</h3>
+    <h4>State: {{vm.item.state}}</h4>
+    <hr/>
+    <h4>Author: <a href="{{vm.item.user.html_url}}" target="_blank">{{vm.item.user.login}}</a></h4>
+    <img class="github-avatar" ng-src="{{vm.item.user.avatar_url}}" alt=""/>
+    <hr/>
+    <a class="btn btn-primary" href="#/">Назад</a>
+
+    <!--<pre>{{vm.item | json}}</pre>-->
+</div>

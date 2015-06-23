@@ -1,0 +1,31 @@
+
+<div class="panel panel-default">
+    <h1 class="page-header">Поиск issues репозитория на GitHub</h1>
+
+    <div class="row">
+        <div class="col-md-6">
+            <input type="text" class="form-control" ng-model="main.username" placeholder="Имя пользователя"/>
+            <input type="text" class="form-control" ng-model="main.repo" placeholder="Название репозитория"/>
+            <button class="btn btn-primary bt-search"
+                    ng-click="main.search()"
+                    ng-disabled="!(main.username && main.repo)">Поиск
+            </button>
+            <div cg-busy="main.promise"></div>
+        </div>
+    </div>
+
+    <div ng-if="main.data" class="well">
+        <div class="panel panel-default" ng-repeat="item in main.data.items">
+            <a href="#/{{item.number}}"><h4>{{item.number}}. {{item.title}}</h4></a>
+            <h5>Открыт: {{item.created_at}}</h5>
+            <h4>Автор: <a href="{{item.user.html_url}}" target="_blank">{{item.user.login}}</a></h4>
+            <img class="github-avatar" ng-src="{{item.user.avatar_url}}" alt=""/>
+        </div>
+        <!--<pre>{{main.data | json}}</pre>-->
+    </div>
+
+    <div class="alert alert-danger" ng-if="main.searchError">
+        <h3>Оуч! Репозиторий не найден :(</h3>
+    </div>
+</div>
+
