@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+
+</head>
+<body ng-app="app" ng-controller="MainController as main">
+
+<div class="container">
+    <h1>Browse issues in a repository</h1>
+
+    <div class="row">
+        <div class="col-md-6">
+            <input type="text" class="form-control" ng-model="main.username" placeholder="Имя пользователя"/>
+            <input type="text" class="form-control" ng-model="main.repo" placeholder="Название репозитория"/>
+            <button class="btn btn-primary bt-search"
+                    ng-click="main.search()"
+                    ng-disabled="!(main.username && main.repo)">Поиск
+            </button>
+        </div>
+    </div>
+
+    <h4 ng-if="main.items !== undefined">Total issues: {{main.items.length}}</h4>
+    <nav>
+        <ul class="pagination">
+            <li ng-repeat="item in main.items" ng-class="{active:item.active}" ng-click="main.selectItem(item)">
+                <a href="#">{{item.id + 1}}</a>
+            </li>
+        </ul>
+    </nav>
+    <pre>{{main.currentItem.data | json}}</pre>
+
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
+
+<script>
+
+    var app = angular.module("app", []);
+
+    app.controller("MainController", function (GitHub) {
+        var main = this;
+
+        main.items = undefined;
+        main.currentItem = undefined;
+        main.username = "ericelliott";
+        main.repo = "essential-javascript-links";
+
+        main.selectItem = function (item) {
+            if (main.currentItem) main.currentItem.active = false;
+            main.currentItem = item;
+            main.currentItem.active = true;
+        }
+
+        main.search = function () {
+            main.items = undefined;
+            main.currentItem = undefined;
+
+            main.promise = GitHub.searchIssues(main.username, main.repo);
+            main.promise.then(
+                    function success(obj) {
+                        main.items = obj.data.map(function (x, i) {
+                            return {id:i, active:false, data:x};
+                        });
+                        if (main.items.length > 0) {
+                            main.selectItem(main.items[0]);
+                        }
+
+                    },
+                    function error() {
+                        main.searchError = true;
+                    }
+            )
+        }
+
+    })
+
+    app.factory('GitHub', function ($http) {
+        return {
+            searchIssues: function (username, repo) {
+                return $http.get('https://api.github.com/repos/' + username + "/" + repo + "/issues");
+            }
+        }
+    })
+
+
+</script>
+
+</body>
+</html>
