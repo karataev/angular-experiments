@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Cookies Test</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+
+</head>
+<body ng-app="app" ng-controller="MainController as main">
+
+<div class="container">
+    <h4>Простой пример использования сервиса $cookies</h4>
+    <h1>У тебя {{main.totalMoney}} рублей</h1>
+    <button class="btn btn-primary" ng-click="main.addRouble()">Добавить рублик</button>
+    <br/><br/>
+    <button class="btn btn-default" ng-click="main.saveCookies()">Сохранить в куках</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.1/angular.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.1/angular-cookies.min.js"></script>
+
+<script>
+
+    var app = angular.module("app", ["ngCookies"]);
+
+    app.controller("MainController", function ($cookies) {
+        var main = this;
+
+        main.totalMoney = 0;
+        var cookieMoney = $cookies.get('totalMoney');
+        if (cookieMoney) main.totalMoney = Number(cookieMoney);
+
+        main.addRouble = function () {
+            main.totalMoney += 1;
+        }
+
+        main.saveCookies = function () {
+
+            $cookies.put('totalMoney', main.totalMoney);
+        }
+    })
+
+</script>
+
+</body>
+</html>
