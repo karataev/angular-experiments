@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/topcoat/0.8.0/css/topcoat-desktop-light.min.css">
+
+</head>
+<body class="well-lg" ng-app="app" ng-controller="AppCtrl as app">
+
+<button class="topcoat-button--large--cta" ng-click="app.toggle=!app.toggle">Goodbye, fair notification</button>
+<hr/>
+<div class="topcoat-notification toggle" ng-if="app.toggle">I'm too young to fade! :(</div>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.16.1/TweenMax.min.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0/angular.min.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0/angular-animate.min.js"></script>
+
+<script>
+    var app = angular.module("app", ["ngAnimate"]);
+
+    app.controller("AppCtrl", function() {
+        this.toggle = true;
+    });
+
+    app.animation(".toggle", function () {
+        return {
+            leave: function (element, done) {
+                element.text("Nooooo!!!");
+                TweenMax.to(element, 0.5, {opacity:0, onComplete:done});
+            },
+            enter: function (element, done) {
+                element.text("Yay, I'm alive!");
+                TweenMax.from(element, 0.5, {opacity:0, onComplete:done});
+            }
+        };
+    });
+</script>
+
+</body>
+</html>
