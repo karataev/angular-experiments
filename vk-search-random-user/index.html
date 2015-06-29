@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+
+    <style>
+        .user-item {
+            display: inline-block;
+            margin:5px 5px;
+            padding: 5px;
+            border:2px solid black;
+            background-color: #eeeeee;
+        }
+    </style>
+
+</head>
+<body ng-app="app" ng-controller="MainController as main" ng-cloak>
+
+<div class="container">
+    <h3>Поиск рандомных юзеров ВК по Id от 1 до 10.000.000</h3>
+    <button class="btn btn-primary" ng-click="main.addItem()">Найти</button>
+    <hr/>
+    <ul class="list-unstyled">
+        <li class="user-item use-tween" ng-repeat="item in main.items">
+            <p>Id: {{item.id}}</p>
+            <h3 ng-if="item.loading">Секундочку...</h3>
+            <div ng-if="!item.loading">
+                <p>{{item.first_name}} {{item.last_name}}</p>
+                <img class="thumbnail" ng-src="{{item.photo_100}}" alt=""/>
+            </div>
+            <button class="btn btn-danger btn-sm" ng-click="main.removeItem(item)">Удалить</button>
+        </li>
+    </ul>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.1/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.1/angular-animate.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.16.1/TweenMax.min.js"></script>
+
+<script src="//vk.com/js/api/openapi.js" type="text/javascript"></script>
+<script>VK.init({apiId: 4937981});</script>
+
+<script>
+
+    var app = angular.module("app", ["ngAnimate"]);
+
+    app.controller("MainController", function ($scope, VKService) {
+        var vm = this;
+
+        var items = [];
+
+        function addItem() {
+            var randomId = Math.floor(1 + Math.random() * 10000000);
+            var item = {
+                id:randomId,
+                loading:true
+            }
+            items.push(item);
+
+            VKService.getUser(randomId, function (data) {
+                item.loading = false;
+                item.first_name = data.first_name;
+                item.last_name = data.last_name;
+                item.photo_100 = data.photo_100;
+                $scope.$apply();
+            })
+        }
+
+        function removeItem(item) {
+            var index = items.indexOf(item);
+            items.splice(index, 1);
+        }
+
+        // exports
+        vm.addItem = addItem;
+        vm.removeItem = removeItem;
+        vm.items = items;
+    })
+
+    app.service("VKService", function () {
+        return {
+            getUser: function (id, callback) {
+                VK.Api.call('users.get', {uids: id, fields:"photo_100"}, function(r) {
+                    if(r.response) {
+                        var user = r.response[0];
+                        callback(user);
+                    }
+                });
+            }
+        }
+    })
+
+    app.animation(".use-tween", function () {
+        return {
+            enter: function (element, done) {
+                TweenMax.from(element, 0.5, {opacity:0, onComplete:done});
+            },
+            leave: function (element, done) {
+                TweenMax.to(element, 0.5, {opacity:0, onComplete:done});
+            }
+        };
+    });
+
+
+</script>
+
+</body>
+</html>
