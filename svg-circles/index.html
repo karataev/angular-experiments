@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+
+    <style>
+        .holder {
+            display: inline-block;
+            padding: 20px;
+            background-color: tomato;
+        }
+
+        svg {
+            width: 640px;
+            height: 480px;
+            background-color: #eeeeee;
+        }
+
+    </style>
+
+</head>
+<body ng-app="app" ng-controller="MainController as main">
+
+<div class="container">
+    <h1>SVG element. <small>Click to add circles.</small></h1>
+    <div class="holder">
+        <svg id="svg" my-svg>
+            <svg-circle ng-repeat="item in main.items" />
+        </svg>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.1/angular.min.js"></script>
+
+<script>
+    var app = angular.module("app", []);
+
+    app.controller("MainController", function () {
+        var vm = this;
+
+        var items = [
+            {x:100, y:100, r:80},
+            {x:200, y:200, r:40}
+        ]
+
+        function addItem(item) {
+            items.push(item)
+        }
+
+        // exports
+        vm.items = items;
+        vm.addItem = addItem;
+    })
+
+    app.directive("mySvg", function () {
+        return {
+            link: function (scope, el, attrs) {
+                el.on('click', function (e) {
+                    var offset = $("#svg").offset();
+                    var px = e.pageX - offset.left;
+                    var py = e.pageY - offset.top;
+                    var r = 10 + Math.floor(Math.random() * 40);
+                    var item = {x: px, y: py, r:r};
+                    scope.main.addItem(item);
+                    scope.$apply();
+                })
+            }
+        }
+    })
+
+    app.directive("svgCircle", function () {
+        return {
+            link: function (scope, el, attrs) {
+                el.on("mouseover", function () {
+                    el.css({fill:"tomato"});
+                })
+                el.on("mouseout", function () {
+                    el.css({fill:"green"});
+                })
+            },
+            replace:true,
+            template:'<circle ng-attr-cx="{{item.x}}" ng-attr-cy="{{item.y}}" ng-attr-r="{{item.r}}" fill="green" />'
+        }
+    })
+
+</script>
+
+</body>
+</html>
