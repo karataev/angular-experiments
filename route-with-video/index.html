@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+
+    <style>
+
+        video.vidBg-body {
+            background-size: cover;
+            -webkit-transition: 1s opacity;
+            transition: 1s opacity;
+        }
+
+        video.vidBg-fade {
+            opacity: .5;
+        }
+
+        video.vidBg-fullScreen {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+        }
+
+        video.vidBg-autoWidth {
+            width: 100%;
+            height: auto;
+        }
+
+        .video-holder {
+            position: relative;
+            width: 800px;
+            /*height: 700px;*/
+            margin: 0 auto;
+        }
+
+        .video-above {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
+
+        .wrapper {
+            border: 2px solid black;
+        }
+
+        .container {
+            width: 900px;
+            border: 1px solid red;
+            margin: 0 auto;
+        }
+
+        .gallery-image {
+            width: 200px;
+        }
+
+    </style>
+
+</head>
+<body ng-app="app" ng-controller="MainController as main">
+
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.1/angular.min.js"></script>
+<script src="https://code.angularjs.org/1.2.28/angular-route.min.js"></script>
+<script src="libs/vidBg.js"></script>
+<script src="libs/lodash.min.js"></script>
+
+<div class="container">
+    <h3>Навигация и все такое</h3>
+    <a href="#/">Главная</a>
+    <a href="#/video">Видео</a>
+    <a href="#/gallery">Галерея картиночек</a>
+    <div class="wrapper">
+        <div ng-view></div>
+    </div>
+</div>
+
+
+
+<script>
+    var app = angular.module("app", ["ngRoute", "ngVidBg"]);
+
+    app.config( function($routeProvider) {
+        $routeProvider
+                .when('/', {
+                    controller:'FirstController',
+                    templateUrl:'first/first.html'
+                })
+                .when('/video', {
+                    controller:'VideoController',
+                    templateUrl:'video/video.html'
+                })
+                .when('/gallery', {
+                    controller:'GalleryController',
+                    controllerAs:'gal',
+                    templateUrl:'gallery/gallery.html'
+                })
+                .otherwise({
+                    redirectTo:'/'
+                })
+    } );
+
+    app.controller("MainController", function () {
+        var vm = this;
+
+        vm.resources = [
+            'video/small.webm'
+        ];
+    })
+
+</script>
+
+<script src="controllers.js"></script>
+
+</body>
+</html>
